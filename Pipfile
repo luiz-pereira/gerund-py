@@ -7,8 +7,12 @@ name = "pypi"
 django = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
+django-environ = "*"
+google = "*"
+pyaudio = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.10"
+python_full_version = "3.10.10"
