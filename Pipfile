@@ -8,8 +8,11 @@ django = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 django-environ = "*"
-google = "*"
 pyaudio = "*"
+google = "*"
+google-api-core = "*"
+google-cloud-speech = "*"
+pytest-django = "*"
 
 [dev-packages]
 
