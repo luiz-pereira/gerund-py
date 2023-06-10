@@ -190,6 +190,8 @@ def main() -> None:
         sample_rate_hertz=SAMPLE_RATE,
         language_code="pt-BR",
         max_alternatives=1,
+        enable_automatic_punctuation=True,
+        model="latest_long"
     )
 
     streaming_config = speech.StreamingRecognitionConfig(
