@@ -4,21 +4,19 @@ import time
 
 from google.cloud import speech
 
-from audio_capture import AudioCapture
+from human.audio.audio_capture import AudioCapture
 
 STREAMING_LIMIT = 240000  # 4 minutes
 SAMPLE_RATE = 16000
 CHUNK_SIZE = 100  # 100ms
 
-RED = "\033[0;31m"
-GREEN = "\033[0;32m"
-YELLOW = "\033[0;33m"
+
 
 def get_current_time() -> int:
     """Return Current Time in MS."""
     return int(round(time.time() * 1000))
 
-class AudioTranscription:
+class HumanTranscription:
     """Controls the audio capture and transcription process."""
 
     def __init__(self):
@@ -62,9 +60,6 @@ class AudioTranscription:
 
         # instantiate the audio input stream. The input must be in 16-bit mono format
         audio_capture = AudioCapture(SAMPLE_RATE, CHUNK_SIZE)
-        sys.stdout.write(YELLOW)
-        sys.stdout.write('\nListening, say "Quit" or "Exit" to stop.\n\n')
-        sys.stdout.write("=====================================================\n")
 
         # opens the audio stream and starts recording
         with audio_capture as stream:
@@ -105,7 +100,7 @@ class AudioTranscription:
 
 def main():
     print("starting transcription process")
-    with AudioTranscription() as stream:
+    with HumanTranscription() as stream:
         for transcript, transcript_time in stream.transcription_generator():
             readable_time = time.strftime('%x %X')
             sys.stdout.write(GREEN)

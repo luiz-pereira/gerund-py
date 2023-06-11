@@ -1,11 +1,6 @@
 import queue
-import re
-import sys
-import time
 
 import pyaudio
-
-# Audio recording parameters
 
 class AudioCapture:
     """Opens a recording stream as a generator yielding the audio chunks."""
