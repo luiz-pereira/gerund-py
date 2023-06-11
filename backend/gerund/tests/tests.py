@@ -1,5 +1,5 @@
 from django.test import TestCase
-from ..src.human import audio_capture
+from ..src.human.audio import audio_capture
 
 # Create your tests here.
 class ModelTest(TestCase):
