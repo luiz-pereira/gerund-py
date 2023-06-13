@@ -1,4 +1,7 @@
+import time
+
 import openai
+from robot.voice.voice_box import VoiceBox
 
 API_KEY = "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"
 MODEL = "gpt-3.5-turbo"
@@ -14,6 +17,7 @@ class Robot:
 
     def __enter__(self):
         """Enter the context manager."""
+        self.voice = VoiceBox()
         self.closed = False
         return self
 
@@ -39,8 +43,14 @@ class Robot:
         self.chat_log.append(self._build_chat_entry("user", question))
         # just simple answers for now. Maybe we can stream chunks later on.
         # See here:https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb
+        start_time = time.time()
         chat_completion = openai.ChatCompletion.create(model=MODEL, messages=context)
         answer = chat_completion.choices[0].message.content
+        print(f"Time to answer: {time.time() - start_time}")
         self.chat_log.append(self._build_chat_entry("assistant", answer))
         return question, answer
+
+    def speak(self, text):
+        """Speak the text."""
+        self.voice.say(text)
 
