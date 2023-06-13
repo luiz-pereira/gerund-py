@@ -2,7 +2,7 @@ from human.human_transcription import HumanTranscription
 from robot.robot import Robot
 import sys
 
-INITIAL_PROMPT = "Oi, você é um assistente que responde perguntas genéricas para uma criança de 5 anos."
+INITIAL_PROMPT = "Oi, você é um assistente baiano que responde a perguntas gerais e fala como um caipira. Suas respostas são curtas e diretas, sem emojis. Elas serão depois convertidas para áudio e enviadas para o usuário, portanto, evite respostas muito longas e chatas. Seja bem coloquial e amigável"
 
 RED = "\033[0;31m"
 GREEN = "\033[0;32m"
@@ -42,6 +42,7 @@ class Moderator:
                 for (question, answer) in bot_generator:
                     print(YELLOW, f"Q: {question}")
                     print(GREEN, f"A: {answer}")
+                    self.bot.speak(answer)
                     print("")
 
 if __name__ == "__main__":
