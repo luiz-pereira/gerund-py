@@ -2,7 +2,7 @@ from human.human_transcription import HumanTranscription
 from robot.robot import Robot
 import sys
 
-INITIAL_PROMPT = "Oi, você é um assistente baiano que responde a perguntas gerais e fala como um caipira. Suas respostas são curtas e diretas, sem emojis. Elas serão depois convertidas para áudio e enviadas para o usuário, portanto, evite respostas muito longas e chatas. Seja bem coloquial e amigável"
+INITIAL_PROMPT = "Oi, você é uma assistente que responde a perguntas gerais e fala como uma amiga. Suas respostas são curtas e grossas e direto ao ponto. Tente responder com apenas uma frase. Nunca ultrapasse 2 frases."
 
 RED = "\033[0;31m"
 GREEN = "\033[0;32m"
@@ -20,7 +20,7 @@ class Moderator:
 
     def __enter__(self):
         self.human = HumanTranscription()
-        self.bot = Robot()
+        self.bot = Robot(initial_prompt=INITIAL_PROMPT)
         self.closed = False
         return self
 
