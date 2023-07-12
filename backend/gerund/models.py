@@ -1,20 +1,42 @@
 from django.db import models
+from pgvector.django import VectorField
 
 # Create your models here.
-class Chat(models.Model):
+class OriginalOutgoing(models.Model):
+    content = models.TextField()
+    type = models.CharField(max_length=30)
+    original_incoming = models.ForeignKey('OriginalIncoming', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     def _str_(self):
         return self.id
 
-class Message(models.Model):
+class OriginalIncoming(models.Model):
     content = models.TextField()
-    chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    type = models.CharField(max_length=30)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def _str_(self):
-        return self.content
+        return self.id
 
-class Person(models.Model):
-    name = models.CharField(max_length=30)
+class OutgoingVariations(models.Model):
+    content = models.TextField()
+    original_outgoing = models.ForeignKey('OriginalOutgoing', on_delete=models.CASCADE)
+    speech_binary = models.BinaryField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def _str_(self):
-        return self.name
+        return self.id
+
+class IncomingVariations(models.Model):
+    content = models.TextField()
+    original_incoming = models.ForeignKey('OriginalIncoming', on_delete=models.CASCADE)
+    embedding = VectorField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def _str_(self):
+        return self.id

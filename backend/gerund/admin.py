@@ -1,19 +1,21 @@
 from django.contrib import admin
-from .models import Chat, Message, Person
-
+from .models import OriginalOutgoing, OriginalIncoming, OutgoingVariations, IncomingVariations
 # Register your models here.
 
-class ChatAdmin(admin.ModelAdmin):
-    list_display = ('message_set',)
 
-class MessageAdmin(admin.ModelAdmin):
-    list_display = ('content', 'chat', 'person')
+class OutgoingVariationsAdmin(admin.ModelAdmin):
+    list_display = ('content', 'original_outgoing')
 
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'message_set')
+class OriginalOutgoingAdmin(admin.ModelAdmin):
+    list_display = ('content', 'type', 'original_incoming')
 
-# Register your models here.
+class IncomingVariationsAdmin(admin.ModelAdmin):
+    list_display = ('content', 'original_incoming')
 
-admin.site.register(Chat, ChatAdmin)
-admin.site.register(Message, MessageAdmin)
-admin.site.register(Person, PersonAdmin)
+class OriginalIncomingAdmin(admin.ModelAdmin):
+    list_display = ('content', 'type')
+
+admin.site.register(OutgoingVariations, OutgoingVariationsAdmin)
+admin.site.register(OriginalOutgoing, OriginalOutgoingAdmin)
+admin.site.register(IncomingVariations, IncomingVariationsAdmin)
+admin.site.register(OriginalIncoming, OriginalIncomingAdmin)
