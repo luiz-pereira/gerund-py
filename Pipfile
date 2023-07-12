@@ -17,6 +17,7 @@ termcolor = "*"
 openai = "*"
 pydub = "*"
 google-cloud-texttospeech = "*"
+pgvector = "*"
 
 [dev-packages]
 ipykernel = "*"
