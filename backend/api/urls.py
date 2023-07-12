@@ -21,9 +21,10 @@ from gerund import views
 
 
 router = routers.DefaultRouter()
-router.register(r'chats', views.ChatView, 'chat')
-router.register(r'messages', views.MessageView, 'message')
-router.register(r'persons', views.PersonView, 'person')
+router.register(r'outgoing_variations', views.OutgoingVariationView, 'outgoing_variations')
+router.register(r'original_outgoing', views.OriginalOutgoingView, 'original_outgoing')
+router.register(r'incoming_variations', views.IncomingVariationView, 'incoming_variations')
+router.register(r'original_incoming', views.OriginalIncomingView, 'original_incoming')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

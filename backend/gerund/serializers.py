@@ -1,21 +1,24 @@
 from rest_framework import serializers
-from .models import Chat, Message, Person
+from .models import OriginalOutgoing, OriginalIncoming, OutgoingVariations, IncomingVariations
 
-class MessageSerializer(serializers.ModelSerializer):
+class OutgoingVariationsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Message
-        fields = ('id', 'content', 'chat', 'person')
+        model = OutgoingVariations
+        fields = ('id', 'content', 'original_outgoing', 'speech_binary')
 
-class ChatSerializer(serializers.ModelSerializer):
-    message_set = MessageSerializer(many=True, read_only=True)
-
+class OriginalOutgoingSerializer(serializers.ModelSerializer):
+    outgoing_variation_set = OutgoingVariationsSerializer(many=True, read_only=True)
     class Meta:
-        model = Chat
-        fields = ('id', 'message_set')
+        model = OriginalOutgoing
+        fields = ('id', 'content', 'type', 'original_incoming')
 
-class PersonSerializer(serializers.ModelSerializer):
-    message_set = MessageSerializer(many=True, read_only=True)
-
+class IncomingVariationsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Person
-        fields = ('id', 'name', 'message_set')
+        model = IncomingVariations
+        fields = ('id', 'content', 'original_incoming', 'embedding')
+
+class OriginalIncomingSerializer(serializers.ModelSerializer):
+    incoming_variation_set = IncomingVariationsSerializer(many=True, read_only=True)
+    class Meta:
+        model = OriginalIncoming
+        fields = ('id', 'content', 'type')
