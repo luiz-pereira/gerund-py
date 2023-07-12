@@ -18,6 +18,7 @@ openai = "*"
 pydub = "*"
 google-cloud-texttospeech = "*"
 pgvector = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 ipykernel = "*"
