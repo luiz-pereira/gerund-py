@@ -24,7 +24,7 @@ class OriginalIncoming(models.Model):
 class OutgoingVariations(models.Model):
     content = models.TextField()
     original_outgoing = models.ForeignKey('OriginalOutgoing', on_delete=models.CASCADE)
-    speech_binary = models.BinaryField()
+    speech_binary = models.BinaryField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -34,7 +34,7 @@ class OutgoingVariations(models.Model):
 class IncomingVariations(models.Model):
     content = models.TextField()
     original_incoming = models.ForeignKey('OriginalIncoming', on_delete=models.CASCADE)
-    embedding = VectorField()
+    embedding = VectorField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
