@@ -1,24 +1,24 @@
 from rest_framework import serializers
-from .models import OriginalOutgoing, OriginalIncoming, OutgoingVariations, IncomingVariations
+from .models import Answer, Question, OutgoingMessages, IncomingEmbeddings
 
-class OutgoingVariationsSerializer(serializers.ModelSerializer):
+class OutgoingMessagesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OutgoingVariations
-        fields = ('id', 'content', 'original_outgoing', 'speech_binary')
+        model = OutgoingMessages
+        fields = ('id', 'content', 'type', 'speech_binary')
 
-class OriginalOutgoingSerializer(serializers.ModelSerializer):
-    outgoing_variation_set = OutgoingVariationsSerializer(many=True, read_only=True)
+class AnswerSerializer(serializers.ModelSerializer):
+    outgoing_message_set = OutgoingMessagesSerializer(many=True, read_only=True)
     class Meta:
-        model = OriginalOutgoing
-        fields = ('id', 'content', 'type', 'original_incoming')
+        model = Answer
+        fields = ('id', 'content', 'question')
 
-class IncomingVariationsSerializer(serializers.ModelSerializer):
+class IncomingEmbeddingsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = IncomingVariations
-        fields = ('id', 'content', 'original_incoming', 'embedding')
+        model = IncomingEmbeddings
+        fields = ('id', 'content', 'type', 'embedding')
 
-class OriginalIncomingSerializer(serializers.ModelSerializer):
-    incoming_variation_set = IncomingVariationsSerializer(many=True, read_only=True)
+class QuestionSerializer(serializers.ModelSerializer):
+    incoming_embedding_set = IncomingEmbeddingsSerializer(many=True, read_only=True)
     class Meta:
-        model = OriginalIncoming
-        fields = ('id', 'content', 'type')
+        model = Question
+        fields = ('id', 'content', 'answer')

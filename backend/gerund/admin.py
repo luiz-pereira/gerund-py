@@ -1,21 +1,21 @@
 from django.contrib import admin
-from .models import OriginalOutgoing, OriginalIncoming, OutgoingVariations, IncomingVariations
+from .models import Answer, Question, OutgoingMessages, IncomingEmbeddings
 # Register your models here.
 
 
-class OutgoingVariationsAdmin(admin.ModelAdmin):
-    list_display = ('content', 'original_outgoing')
-
-class OriginalOutgoingAdmin(admin.ModelAdmin):
-    list_display = ('content', 'type', 'original_incoming')
-
-class IncomingVariationsAdmin(admin.ModelAdmin):
-    list_display = ('content', 'original_incoming')
-
-class OriginalIncomingAdmin(admin.ModelAdmin):
+class OutgoingMessagesAdmin(admin.ModelAdmin):
     list_display = ('content', 'type')
 
-admin.site.register(OutgoingVariations, OutgoingVariationsAdmin)
-admin.site.register(OriginalOutgoing, OriginalOutgoingAdmin)
-admin.site.register(IncomingVariations, IncomingVariationsAdmin)
-admin.site.register(OriginalIncoming, OriginalIncomingAdmin)
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('content', 'question')
+
+class IncomingEmbeddingsAdmin(admin.ModelAdmin):
+    list_display = ('content', 'type', 'question')
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('content', 'answer')
+
+admin.site.register(OutgoingMessages, OutgoingMessagesAdmin)
+admin.site.register(Answer, AnswerAdmin)
+admin.site.register(IncomingEmbeddings, IncomingEmbeddingsAdmin)
+admin.site.register(Question, QuestionAdmin)
