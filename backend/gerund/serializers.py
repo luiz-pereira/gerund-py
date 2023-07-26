@@ -1,21 +1,24 @@
 from rest_framework import serializers
-from .models import Chat, Message, Person
+from .models import Answer, Question, OutgoingMessages, IncomingEmbeddings
 
-class MessageSerializer(serializers.ModelSerializer):
+class OutgoingMessagesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Message
-        fields = ('id', 'content', 'chat', 'person')
+        model = OutgoingMessages
+        fields = ('id', 'content', 'type', 'speech_binary')
 
-class ChatSerializer(serializers.ModelSerializer):
-    message_set = MessageSerializer(many=True, read_only=True)
-
+class AnswerSerializer(serializers.ModelSerializer):
+    outgoing_message_set = OutgoingMessagesSerializer(many=True, read_only=True)
     class Meta:
-        model = Chat
-        fields = ('id', 'message_set')
+        model = Answer
+        fields = ('id', 'content', 'question')
 
-class PersonSerializer(serializers.ModelSerializer):
-    message_set = MessageSerializer(many=True, read_only=True)
-
+class IncomingEmbeddingsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Person
-        fields = ('id', 'name', 'message_set')
+        model = IncomingEmbeddings
+        fields = ('id', 'content', 'type', 'embedding')
+
+class QuestionSerializer(serializers.ModelSerializer):
+    incoming_embedding_set = IncomingEmbeddingsSerializer(many=True, read_only=True)
+    class Meta:
+        model = Question
+        fields = ('id', 'content', 'answer')

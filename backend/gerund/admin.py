@@ -1,19 +1,21 @@
 from django.contrib import admin
-from .models import Chat, Message, Person
-
+from .models import Answer, Question, OutgoingMessages, IncomingEmbeddings
 # Register your models here.
 
-class ChatAdmin(admin.ModelAdmin):
-    list_display = ('message_set',)
 
-class MessageAdmin(admin.ModelAdmin):
-    list_display = ('content', 'chat', 'person')
+class OutgoingMessagesAdmin(admin.ModelAdmin):
+    list_display = ('content', 'type')
 
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'message_set')
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('content', 'question')
 
-# Register your models here.
+class IncomingEmbeddingsAdmin(admin.ModelAdmin):
+    list_display = ('content', 'type', 'question')
 
-admin.site.register(Chat, ChatAdmin)
-admin.site.register(Message, MessageAdmin)
-admin.site.register(Person, PersonAdmin)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('content', 'answer')
+
+admin.site.register(OutgoingMessages, OutgoingMessagesAdmin)
+admin.site.register(Answer, AnswerAdmin)
+admin.site.register(IncomingEmbeddings, IncomingEmbeddingsAdmin)
+admin.site.register(Question, QuestionAdmin)

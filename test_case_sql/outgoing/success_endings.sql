@@ -1,0 +1,23 @@
+INSERT INTO gerund_outgoingmessages (content, type, created_at, updated_at)
+VALUES
+-- SUCCESS ENDINGS
+('Foi um prazer conversar com você! Nos próximos dias, um responsável técnico entrará em contato para finalizar a contratação e responder a quaisquer outras dúvidas que você possa ter.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Agradeço pelo seu tempo e interesse! Aguarde nosso contato nas próximas 48 horas para dar continuidade ao processo de contratação e esclarecer todas as suas dúvidas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Ótimo bate-papo! Nosso especialista entrará em contato em breve para concluir a contratação e fornecer mais informações, se necessário.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Muito obrigado por sua atenção! Dentro de 48 horas, um membro de nossa equipe técnica ligará para você, a fim de finalizar a contratação e abordar quaisquer outras perguntas que você tenha.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Fico feliz que tenha interesse! Nos próximos dois dias úteis, nosso responsável técnico fará contato para concluir a contratação e esclarecer eventuais dúvidas adicionais.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Agradeço pela conversa! Dentro de até 48 horas, você receberá uma ligação de nosso responsável técnico para finalizar a contratação e resolver quaisquer outras dúvidas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Obrigado por seu tempo! Nosso especialista entrará em contato em breve para concluir o processo de contratação e responder a todas as suas perguntas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Foi um prazer falar com você! Dentro de dois dias úteis, um membro de nossa equipe técnica ligará para você, a fim de finalizar a contratação e abordar quaisquer outras questões.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Agradeço por sua consideração! Aguarde nosso contato nos próximos dois dias para finalizar a contratação e responder a todas as suas dúvidas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Muito obrigado pela sua atenção! Nosso responsável técnico entrará em contato em breve para concluir a contratação e esclarecer todas as suas perguntas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Fico feliz que tenha interesse! Dentro de 48 horas, você receberá uma ligação de nosso especialista para finalizar a contratação e resolver quaisquer outras dúvidas adicionais.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Agradeço pela conversa! Nos próximos dois dias úteis, um membro de nossa equipe técnica fará contato para concluir o processo de contratação e responder a todas as suas perguntas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Obrigado por seu tempo! Nosso especialista entrará em contato em breve para finalizar a contratação e abordar quaisquer outras questões.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Foi um prazer falar com você! Dentro de dois dias úteis, um membro de nossa equipe técnica ligará para você, a fim de concluir a contratação e esclarecer todas as suas dúvidas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Agradeço por sua consideração! Aguarde nosso contato nos próximos dois dias para finalizar a contratação e responder a todas as suas perguntas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Muito obrigado pela sua atenção! Nosso responsável técnico entrará em contato em breve para finalizar a contratação e esclarecer todas as suas perguntas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Fico feliz que tenha interesse! Nos próximos 48 horas, você receberá uma ligação de nosso especialista para finalizar a contratação e resolver quaisquer outras dúvidas adicionais.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Agradeço pela conversa! Nos próximos dois dias úteis, um membro de nossa equipe técnica fará contato para concluir o processo de contratação e responder a todas as suas perguntas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Obrigado por seu tempo! Nosso especialista entrará em contato em breve para finalizar a contratação e abordar quaisquer outras questões.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Foi um prazer falar com você! Dentro de dois dias úteis, um membro de nossa equipe técnica ligará para você, a fim de concluir a contratação e esclarecer todas as suas dúvidas.', 'success_ending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
