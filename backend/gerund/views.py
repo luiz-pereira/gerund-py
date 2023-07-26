@@ -1,22 +1,22 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .serializers import OutgoingVariationsSerializer, OriginalOutgoingSerializer, IncomingVariationsSerializer, OriginalIncomingSerializer
-from .models import OriginalOutgoing, OriginalIncoming, OutgoingVariations, IncomingVariations
+from .serializers import OutgoingMessagesSerializer, AnswerSerializer, IncomingEmbeddingsSerializer, QuestionSerializer
+from .models import Answer, Question, OutgoingMessages, IncomingEmbeddings
 
 # Create your views here.
 
 class OutgoingVariationView(viewsets.ModelViewSet):
-    serializer_class = OutgoingVariationsSerializer
-    queryset = OutgoingVariations.objects.all()
+    serializer_class = OutgoingMessagesSerializer
+    queryset = OutgoingMessages.objects.all()
 
-class OriginalOutgoingView(viewsets.ModelViewSet):
-    serializer_class = OriginalOutgoingSerializer
-    queryset = OriginalOutgoing.objects.all()
+class AnswerView(viewsets.ModelViewSet):
+    serializer_class = AnswerSerializer
+    queryset = Answer.objects.all()
 
 class IncomingVariationView(viewsets.ModelViewSet):
-    serializer_class = IncomingVariationsSerializer
-    queryset = IncomingVariations.objects.all()
+    serializer_class = IncomingEmbeddingsSerializer
+    queryset = IncomingEmbeddings.objects.all()
 
-class OriginalIncomingView(viewsets.ModelViewSet):
-    serializer_class = OriginalIncomingSerializer
-    queryset = OriginalIncoming.objects.all()
+class QuestionView(viewsets.ModelViewSet):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
