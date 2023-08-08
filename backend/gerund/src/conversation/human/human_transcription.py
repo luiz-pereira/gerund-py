@@ -4,13 +4,11 @@ import time
 
 from google.cloud import speech
 
-from human.audio.audio_capture import AudioCapture
+from gerund.src.conversation.human.audio.audio_capture import AudioCapture
 
 STREAMING_LIMIT = 240000  # 4 minutes
 SAMPLE_RATE = 16000
 CHUNK_SIZE = 100  # 100ms
-
-
 
 def get_current_time() -> int:
     """Return Current Time in MS."""
