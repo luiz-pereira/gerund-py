@@ -1,6 +1,7 @@
-from human.human_transcription import HumanTranscription
-from robot.robot import Robot
-import sys
+from gerund.src.conversation.human.human_transcription import HumanTranscription
+from gerund.src.conversation.robot.robot import Robot
+import time
+
 
 # This is hardcoded for now, but it should be a parameter.
 INITIAL_PROMPT = """
@@ -83,6 +84,10 @@ class Moderator:
         print(YELLOW, "=====================================================\n")
 
         with self.human as human, self.bot as bot:
+            bot.greet()
+            # just ignoring the user response for now
+            time.sleep(2)
+            bot.initial_pitch()
             human_generator = human.transcription_generator()
             bot_generator = bot.robot_generator(human_generator)
             while not human.closed and not bot.closed:
