@@ -54,16 +54,16 @@ class Robot:
         """Responds to a message"""
         self.chat_log.append(self._build_chat_entry("user", message))
         coach = self.coach
-        answer = coach.dumb_interpret(message) or self._smart_answer(message)
+        answer = coach.dumb_interpret(message) or self._smart_answer()
         self.chat_log.append(self._build_chat_entry("assistant", answer.content))
         self.speak(answer.speech_binary)
         return message, answer.content
 
-    def _smart_answer(self, message):
+    def _smart_answer(self):
         """Loop for smart answers."""
         coach = self.coach
         context = self.chat_log
-        coach.start_smart_answer_loop(context, message)
+        coach.start_smart_answer_loop(context)
         # plays a stalling message
         self.speak(coach.stall_message().speech_binary)
 

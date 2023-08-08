@@ -37,4 +37,4 @@ def produce_speech_binary(text, language=DEFAULT_LANGUAGE, voice=DEFAULT_VOICE, 
 
 def get_chat_completion(context, model=COMPLETION_MODEL):
     chat_completion = openai.ChatCompletion.create(model=model, messages=context)
-    return chat_completion
+    return chat_completion.choices[0].message.content

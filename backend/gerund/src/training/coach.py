@@ -5,7 +5,6 @@ from gerund.src.ai import apis as ai_apis
 
 from pgvector.django import L2Distance
 
-
 DEFAULT_MIN_DISTANCE = 0.6
 
 TRIGGER_MAP = {
@@ -83,21 +82,21 @@ class Coach:
         outgoing = OutgoingMessages.objects.filter(type=reaction).order_by('?').first()
         return outgoing
 
-    def start_smart_answer_loop(self, context, message):
+    def start_smart_answer_loop(self, context):
         self.in_smart_answer_loop = True
         self.smart_answer = None
-        Thread(target=self._get_smart_answer, args=(message,)).start()
+        Thread(target=self._get_smart_answer, args=(context,)).start()
 
-    def _get_smart_answer(self, context, message):
+    def _get_smart_answer(self, context):
         """Gets a smart answer for a message."""
-        text_answer = ai_apis.get_chat_completion(message)
+        text_answer = ai_apis.get_chat_completion(context)
         speech_answer = ai_apis.produce_speech_binary(text_answer)
-        self.smart_answer = {"content": text_answer, "speech_binary": speech_answer}
+        self.smart_answer = SmartAnswer(text_answer, speech_answer)
         self.in_smart_answer_loop = False
 
     def stall_message(self):
         """Stall message."""
-        return OutgoingMessages.objects.filter(type="stall").order_by('?').first()
+        return OutgoingMessages.objects.filter(type="stalling").order_by('?').first()
 
     def hmmm(self):
         """Hmmm message."""
@@ -110,3 +109,8 @@ class Coach:
     def initial_pitch(self):
         """Initial pitch message."""
         return OutgoingMessages.objects.filter(type="initial_pitch").order_by('?').first()
+
+class SmartAnswer():
+    def __init__(self, content, speech_binary):
+        self.content = content
+        self.speech_binary = speech_binary
