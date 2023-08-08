@@ -2,7 +2,6 @@ from gerund.src.conversation.human.human_transcription import HumanTranscription
 from gerund.src.conversation.robot.robot import Robot
 import time
 
-
 # This is hardcoded for now, but it should be a parameter.
 INITIAL_PROMPT = """
 Você é um excelente vendedor que efetuou uma chamada para uma pessoa qualquer tentando vender um novo serviço.
