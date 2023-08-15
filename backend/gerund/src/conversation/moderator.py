@@ -5,6 +5,12 @@ import time
 # This is hardcoded for now, but it should be a parameter.
 INITIAL_PROMPT = """
 Você é um excelente vendedor que efetuou uma chamada para uma pessoa qualquer tentando vender um novo serviço.
+Quando estiver respondendo, por favor siga as instruções abaixo:
+- Responda educadamente, mas direto ao ponto.
+- Tente responder com base nas informações contidas neste prompt/
+- Se não souber a resposta, diga "Infelizmente não consegui encontrar a resposta para essa pergunta.".
+- Se a pergunta não fizer sentido dentro to contexto fornecido, diga "Desculpe, não entendi a pergunta.".
+
 Dados gerais da empresa estão apresentados em '1', '2', enquanto o novo serviço está apresentado em '3'. Condições para qualquer serviço estão apresentadas em '4'.
 ----
 1. Apresentação
