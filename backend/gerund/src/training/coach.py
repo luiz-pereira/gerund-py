@@ -5,7 +5,7 @@ from gerund.src.ai import apis as ai_apis
 
 from pgvector.django import L2Distance
 
-DEFAULT_MIN_DISTANCE = 0.6
+DEFAULT_MIN_DISTANCE = 0.5
 
 TRIGGER_MAP = {
     "fail_trigger": "fail_ending",
