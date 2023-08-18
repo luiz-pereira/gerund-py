@@ -1,30 +1,30 @@
 import React from 'react';
-import { Button, Container, Grid, TextField } from '@mui/material';
-
+import { Grid, TextField } from '@mui/material';
 
 export default function Home() {
   return (
-    <Container
-      container
-      direction="column"
-      justifyContent="space-evenly"
-      alignItems="flex-start"
-    >
+    <Grid container direction={'column'}>
       <TextField
         id="outlined-multiline-static"
-        label="Multiline"
+        label="Prompt"
         multiline
         rows={4}
-        defaultValue="Default Value"
-        />
-        <TextField
+        style={{ width: '50%', margin: 10 }}
+      />
+      <TextField
         id="outlined-multiline-static"
-        label="Multiline"
+        label="Company Presentation"
         multiline
         rows={4}
-        defaultValue="Default Value"
-        />
-      <Button>Click me</Button>
-    </Container>
+        style={{ width: '50%', margin: 10 }}
+      />
+      <TextField
+        id="outlined-multiline-static"
+        label="New Product"
+        multiline
+        rows={4}
+        style={{ width: '50%', margin: 10 }}
+      />
+    </Grid>
   );
 }
