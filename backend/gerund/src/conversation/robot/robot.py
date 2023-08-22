@@ -43,7 +43,6 @@ class Robot:
         self.chat_log.append(self._build_chat_entry("assistant", initial_pitch.content))
         self.speak(initial_pitch.speech_binary)
 
-
     def robot_generator(self, incoming_messages_generator):
         """Generate the robot's responses."""
         while not self.closed:

@@ -25,6 +25,7 @@ router.register(r'outgoing_messages', views.OutgoingVariationView, 'outgoing_mes
 router.register(r'answers', views.AnswerView, 'answers')
 router.register(r'incoming_embeddings', views.IncomingVariationView, 'incoming_embeddings')
 router.register(r'questions', views.QuestionView, 'questions')
+router.register(r'scripts', views.ScriptView, 'scripts')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
