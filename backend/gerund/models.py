@@ -43,6 +43,7 @@ class IncomingEmbedding(models.Model):
         return self.id
 
 class Script(models.Model):
+    name = models.CharField(max_length=36, null=True)
     custom_prompt = models.TextField()
     presentation = models.TextField()
     new_product = models.TextField()
@@ -51,3 +52,11 @@ class Script(models.Model):
 
     def _str_(self):
         return self.id
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name'],
+                name='unique_script_name'
+            )
+        ]
