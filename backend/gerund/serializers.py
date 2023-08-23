@@ -21,10 +21,10 @@ class QuestionSerializer(serializers.ModelSerializer):
     incoming_embedding_set = IncomingEmbeddingSerializer(many=True, read_only=True)
     class Meta:
         model = Question
-        fields = ('id', 'content', 'answer')
+        fields = ('id', 'content', 'answer_set', 'incoming_embedding_set')
 
 class ScriptSerializer(serializers.ModelSerializer):
     question_set = QuestionSerializer(many=True, read_only=True)
     class Meta:
         model = Script
-        fields = ('id', 'prompt', 'presentation', 'new_product', 'question_set')
+        fields = ('id', 'custom_prompt', 'presentation', 'new_product', 'question_set')
