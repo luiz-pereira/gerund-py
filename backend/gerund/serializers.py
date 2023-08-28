@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
 
 class OutgoingMessageSerializer(serializers.ModelSerializer):
@@ -25,6 +26,9 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class ScriptSerializer(serializers.ModelSerializer):
     question_set = QuestionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Script
-        fields = ('id', 'custom_prompt', 'presentation', 'new_product', 'question_set')
+        fields = ('id', 'name', 'custom_prompt', 'presentation', 'new_product', 'question_set')
+        name = serializers.CharField(validators=[UniqueValidator(queryset=Script.objects.all())])
+

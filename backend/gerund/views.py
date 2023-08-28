@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
+
 from .serializers import OutgoingMessageSerializer, AnswerSerializer, IncomingEmbeddingSerializer, QuestionSerializer, ScriptSerializer
 from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
 
@@ -24,3 +27,12 @@ class QuestionView(viewsets.ModelViewSet):
 class ScriptView(viewsets.ModelViewSet):
     serializer_class = ScriptSerializer
     queryset = Script.objects.all()
+
+    def partial_update(self, request, pk=None):
+        script = Script.objects.get(pk=pk)
+        serializer = ScriptSerializer(script, data=request.data, partial=True)
+        try:
+            serializer.save()
+            return Response(serializer.data)
+        except:
+            return Response(status=HTTP_400_BAD_REQUEST)
