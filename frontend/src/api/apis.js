@@ -1,15 +1,34 @@
+import {snakeCase} from 'lodash';
+
 const BASE_ENDPOINT = 'http://localhost:8000/api/';
 
 export async function get(path) {
-  const response = await fetch(
-    `${BASE_ENDPOINT + path}/`,
+  return fetch(
+    `${BASE_ENDPOINT + path}`,
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     },
   )
     .then((response) => {
-      debugger;
+      if (!response.ok) {
+        throw response;
+      }
+      return response.json();
+    })
+    .then((data) => data)
+}
+
+export async function post(path, data) {
+  const response = await fetch(
+    `${BASE_ENDPOINT + path}/`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    },
+  )
+    .then((response) => {
       if (!response.ok) {
         throw response;
       }
@@ -23,17 +42,19 @@ export async function get(path) {
   return response;
 }
 
-export async function post(path, data) {
+export async function patch(path, id, data) {
+  const body = normalizeData(data);
+  debugger
+
   const response = await fetch(
-    `${BASE_ENDPOINT + path}/`,
+    `${BASE_ENDPOINT + path}/${id}/`,
     {
-      method: 'POST',
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: body,
     },
   )
     .then((response) => {
-      debugger;
       if (!response.ok) {
         throw response;
       }
@@ -41,8 +62,19 @@ export async function post(path, data) {
     })
     .then((data) => data)
     .catch((error) => {
-      debugger;
-    });
+      return {error: {status: error.status, message: error.statusText}}
+    })
 
   return response;
+}
+
+function normalizeData(data) {
+  const snakeData =
+    Object.entries(data)
+      .reduce((acc, [key, val]) => {
+        acc[snakeCase(key)] = val
+        return acc
+      }, {})
+
+  return JSON.stringify(snakeData)
 }
