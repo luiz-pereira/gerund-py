@@ -1,66 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { get } from '../../api/apis'
+import { useNavigate } from "react-router-dom";
+
 
 export default function ListScripts() {
-  const [prompt, setPrompt] = useState('')
-  const [companyPresentation, setCompanyPresentation] = useState('')
-  const [newProduct, setNewProduct] = useState('')
+  const navigate = useNavigate();
   const [scripts, setScripts] = useState([])
 
   const fetchScripts = async () => {
-    const response = await get('/scripts')
-    debugger
-    setScripts(response)
+    const scriptsResponse = await get('scripts')
+    setScripts(scriptsResponse)
   }
 
   useEffect(() => {
     fetchScripts()
   }, [])
 
-  function createData (name,
-    calories,
-    fat,
-    carbs,
-    protein
-  ) {
-    return { name, calories, fat, carbs, protein }
-  }
-
-  const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9)
-  ]
-
   return (
     <TableContainer>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table sx={{ width: 200 }} aria-label="simple table">
+        <caption style={{captionSide: "top"}}>Scripts</caption>
         <TableHead>
           <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell align="right">id</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {scripts.map((row) => (
             <TableRow
               hover
-              key={row.name}
+              key={row.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              onClick={() => navigate(`/scripts/${row.id}`)}
             >
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+              <TableCell align="right">{row.id}</TableCell>
             </TableRow>
           ))}
         </TableBody>
