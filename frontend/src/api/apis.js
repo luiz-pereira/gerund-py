@@ -19,7 +19,7 @@ export async function get(path) {
     .then((data) => data)
 }
 
-export async function post(path, data) {
+export async function post(path, data={}) {
   const response = await fetch(
     `${BASE_ENDPOINT + path}/`,
     {
@@ -32,19 +32,21 @@ export async function post(path, data) {
       if (!response.ok) {
         throw response;
       }
+      if (response.status === 204) {
+        return {};
+      }
       return response.json();
     })
     .then((data) => data)
     .catch((error) => {
-      debugger;
-    });
+      return {error: {status: error.status, message: error.statusText}}
+    })
 
   return response;
 }
 
 export async function patch(path, id, data) {
   const body = normalizeData(data);
-  debugger
 
   const response = await fetch(
     `${BASE_ENDPOINT + path}/${id}/`,

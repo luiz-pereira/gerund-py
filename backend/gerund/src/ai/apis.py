@@ -1,11 +1,14 @@
 import openai
 from google.cloud import texttospeech
 
-
-
 OPENAI_API_KEY = "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"
 openai.api_key = OPENAI_API_KEY
 COMPLETION_MODEL = "gpt-3.5-turbo"
+
+class Models:
+    GPT3 = "gpt-3.5-turbo"
+    GPT4 = "gpt-4-0613"
+
 
 def produce_embedding(text):
     """Produce an embedding for the text."""

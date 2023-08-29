@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import { Button, Grid, TextField } from '@mui/material';
-import { get, patch } from '../../api/apis'
+import { Grid, TextField, Button, Box, CircularProgress } from '@mui/material';
+import { get, post, patch } from '../../api/apis'
 import { useParams } from 'react-router-dom'
+import ListQuestions from './questions/ListQuestions'
 
 export default function Script() {
   const [name, setName] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
   const [presentation, setPresentation] = useState('');
   const [newProduct, setNewProduct] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [script, setScript] = useState(null);
   const { id } = useParams();
 
 
@@ -17,10 +20,25 @@ export default function Script() {
   }
 
   const setValues = (scriptResponse) => {
+    setScript(scriptResponse)
     setName(scriptResponse.name)
     setCustomPrompt(scriptResponse.custom_prompt)
     setPresentation(scriptResponse.presentation)
     setNewProduct(scriptResponse.new_product)
+  }
+
+  const handleGenerateQuestion = async () => {
+    setLoading(true)
+    const scriptResponse = await post(`scripts/${id}/generate_questions`)
+    setValues(scriptResponse)
+    setLoading(false)
+  }
+
+  const handleGenerateAnswer = async () => {
+    setLoading(true)
+    const scriptResponse = await post(`scripts/${id}/generate_answers`)
+    setValues(scriptResponse)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -36,16 +54,16 @@ export default function Script() {
     setValues(scriptResponse)
   }
 
-
   return (
     <Grid container>
       <Grid container direction={'column'}>
-      <TextField
+        <TextField
           id="outlined-multiline-static"
           label="Name"
           rows={4}
           style={{ width: '50%', margin: 10 }}
           value={name}
+          disabled={loading}
           onChange={(e) => handleChange("name", e.target.value)}
         />
         <TextField
@@ -55,6 +73,7 @@ export default function Script() {
           rows={4}
           style={{ width: '50%', margin: 10 }}
           value={customPrompt}
+          disabled={loading}
           onChange={(e) => handleChange("customPrompt", e.target.value)}
         />
         <TextField
@@ -64,6 +83,7 @@ export default function Script() {
           rows={4}
           style={{ width: '50%', margin: 10 }}
           value={presentation}
+          disabled={loading}
           onChange={(e) => handleChange("presentation", e.target.value)}
         />
         <TextField
@@ -73,12 +93,28 @@ export default function Script() {
           rows={4}
           style={{ width: '50%', margin: 10 }}
           value={newProduct}
+          disabled={loading}
           onChange={(e) => handleChange("newProduct", e.target.value)}
         />
       </Grid>
-      <Grid item>
-        <Button variant="contained" style={{ margin: 10 }} onClick={()=> console.log("whatevis")}>Generate</Button>
-      </Grid>
+        <Button
+          variant="contained"
+          style={{ margin: 10 }}
+          onClick={handleGenerateQuestion}
+          disabled={loading}
+        >
+          {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Questions"}
+        </Button>
+        <Button
+          variant="contained"
+          color='secondary'
+          style={{ margin: 10 }}
+          onClick={handleGenerateAnswer}
+          disabled={loading}
+          >
+            {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Answers"}
+          </Button>
+        <ListQuestions questions={script?.question_set || []} />
     </Grid>
   );
 }
