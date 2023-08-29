@@ -4,7 +4,7 @@ from pgvector.django import VectorField
 # Create your models here.
 class Answer(models.Model):
     content = models.TextField()
-    question = models.ForeignKey('Question', on_delete=models.CASCADE)
+    question = models.OneToOneField('Question', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -43,8 +43,8 @@ class IncomingEmbedding(models.Model):
         return self.id
 
 class Script(models.Model):
-    name = models.CharField(max_length=36, null=True)
-    custom_prompt = models.TextField()
+    name = models.CharField(max_length=36, null=False, blank=False, unique=True)
+    custom_prompt = models.TextField(null=True, blank=True)
     presentation = models.TextField()
     new_product = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -52,11 +52,3 @@ class Script(models.Model):
 
     def _str_(self):
         return self.id
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['name'],
-                name='unique_script_name'
-            )
-        ]

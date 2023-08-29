@@ -8,7 +8,6 @@ class OutgoingMessageSerializer(serializers.ModelSerializer):
         fields = ('id', 'content', 'type', 'speech_binary')
 
 class AnswerSerializer(serializers.ModelSerializer):
-    outgoing_message_set = OutgoingMessageSerializer(many=True, read_only=True)
     class Meta:
         model = Answer
         fields = ('id', 'content', 'question')
@@ -20,9 +19,10 @@ class IncomingEmbeddingSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     incoming_embedding_set = IncomingEmbeddingSerializer(many=True, read_only=True)
+    answer = AnswerSerializer(read_only=True)
     class Meta:
         model = Question
-        fields = ('id', 'content', 'answer_set', 'incoming_embedding_set')
+        fields = ('id', 'content', 'answer', 'incoming_embedding_set')
 
 class ScriptSerializer(serializers.ModelSerializer):
     question_set = QuestionSerializer(many=True, read_only=True)
