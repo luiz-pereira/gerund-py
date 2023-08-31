@@ -23,8 +23,9 @@ export default function ListScripts() {
         <caption style={{captionSide: "top"}}>Scripts</caption>
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
             <TableCell align="right">id</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Language</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -35,10 +36,13 @@ export default function ListScripts() {
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               onClick={() => navigate(`/scripts/${row.id}`)}
             >
+              <TableCell align="right">{row.id}</TableCell>
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="right">{row.id}</TableCell>
+              <TableCell component="th" scope="row">
+                {row.language_code}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -22,13 +22,13 @@ class QuestionSerializer(serializers.ModelSerializer):
     answer = AnswerSerializer(read_only=True)
     class Meta:
         model = Question
-        fields = ('id', 'content', 'answer', 'incoming_embedding_set')
+        fields = ('id', 'content', 'answer', 'answerable', 'incoming_embedding_set')
 
 class ScriptSerializer(serializers.ModelSerializer):
     question_set = QuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Script
-        fields = ('id', 'name', 'custom_prompt', 'presentation', 'new_product', 'question_set')
+        fields = ('id', 'name', 'language_code', 'custom_prompt', 'presentation', 'new_product', 'question_set')
         name = serializers.CharField(validators=[UniqueValidator(queryset=Script.objects.all())])
 

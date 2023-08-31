@@ -1,5 +1,7 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types'
 
 
@@ -12,6 +14,7 @@ export default function ListQuestions({ questions }) {
         <TableHead>
           <TableRow>
             <TableCell>Question</TableCell>
+            <TableCell>Answerable?</TableCell>
             <TableCell>Answer</TableCell>
           </TableRow>
         </TableHead>
@@ -22,10 +25,8 @@ export default function ListQuestions({ questions }) {
               key={question.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
-                {question.content}
-              </TableCell>
-
+              <TableCell>{question.content}</TableCell>
+              <TableCell>{question.answerable ? <CheckIcon/> : <ClearIcon />}</TableCell>
               <TableCell align="right" style={{color: question.answer ? 'black' : 'firebrick'}}>{question.answer ? question.answer.content : '-- no answer --'}</TableCell>
             </TableRow>
           ))}

@@ -16,6 +16,8 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     script = models.ForeignKey('Script', on_delete=models.CASCADE)
+    answerable = models.BooleanField(default=True)
+    answered = models.BooleanField(default=False)
 
     def _str_(self):
         return self.id
@@ -47,6 +49,7 @@ class Script(models.Model):
     custom_prompt = models.TextField(null=True, blank=True)
     presentation = models.TextField()
     new_product = models.TextField()
+    language_code = models.CharField(max_length=36, null=False, blank=False, default="en")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

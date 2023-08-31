@@ -48,7 +48,8 @@ class ScriptView(viewsets.ModelViewSet):
         script = self.get_object()
         try:
             script_generation.generate_potential_questions(script)
-            serializer = ScriptSerializer(script.refresh_from_db())
+            script.refresh_from_db()
+            serializer = ScriptSerializer(script)
             return Response(serializer.data)
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
@@ -58,7 +59,8 @@ class ScriptView(viewsets.ModelViewSet):
         script = self.get_object()
         try:
             script_generation.generate_potential_answers(script)
-            serializer = ScriptSerializer(script.refresh_from_db())
+            script.refresh_from_db()
+            serializer = ScriptSerializer(script)
             return Response(serializer.data)
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
