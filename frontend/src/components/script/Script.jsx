@@ -45,12 +45,14 @@ export default function Script() {
     fetchScript()
   }, [])
 
-  const handleChange = async (key, value) => {
-    const scriptResponse = await patch("scripts", id, {[key]: value})
+  const handleSaveChanges = async () => {
+    setLoading(true)
+    const scriptResponse = await patch("scripts", id, {name, customPrompt, presentation, newProduct})
     if (scriptResponse.error) {
       console.log("error")
       return
     }
+    setLoading(false)
     setValues(scriptResponse)
   }
 
@@ -64,7 +66,7 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={name}
           disabled={loading}
-          onChange={(e) => handleChange("name", e.target.value)}
+          onChange={(e) => setName(e.target.value)}
         />
         <TextField
           id="outlined-multiline-static"
@@ -74,7 +76,7 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={customPrompt}
           disabled={loading}
-          onChange={(e) => handleChange("customPrompt", e.target.value)}
+          onChange={(e) => setCustomPrompt(e.target.value)}
         />
         <TextField
           id="outlined-multiline-static"
@@ -84,7 +86,7 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={presentation}
           disabled={loading}
-          onChange={(e) => handleChange("presentation", e.target.value)}
+          onChange={(e) => setPresentation(e.target.value)}
         />
         <TextField
           id="outlined-multiline-static"
@@ -94,9 +96,18 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={newProduct}
           disabled={loading}
-          onChange={(e) => handleChange("newProduct", e.target.value)}
+          onChange={(e) => setNewProduct(e.target.value)}
         />
       </Grid>
+        <Button
+          variant="contained"
+          color='warning'
+          style={{ margin: 10 }}
+          onClick={handleSaveChanges}
+          disabled={loading}
+        >
+          {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Save Changes"}
+        </Button>
         <Button
           variant="contained"
           style={{ margin: 10 }}
