@@ -3,6 +3,7 @@ import { Grid, TextField, Button, Box, CircularProgress } from '@mui/material';
 import { get, post, patch } from '../../api/apis'
 import { useParams } from 'react-router-dom'
 import ListQuestions from './questions/ListQuestions'
+import ShowQuestion from './questions/ShowQuestion'
 
 export default function Script() {
   const [name, setName] = useState('');
@@ -11,6 +12,7 @@ export default function Script() {
   const [newProduct, setNewProduct] = useState('');
   const [loading, setLoading] = useState(false);
   const [script, setScript] = useState(null);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null)
   const { id } = useParams();
 
 
@@ -54,6 +56,10 @@ export default function Script() {
     }
     setLoading(false)
     setValues(scriptResponse)
+  }
+
+  const handleRowClick = (questionId) => {
+    setSelectedQuestionId(questionId)
   }
 
   return (
@@ -125,7 +131,8 @@ export default function Script() {
           >
             {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Answers"}
           </Button>
-        <ListQuestions questions={script?.question_set || []} />
+        <ListQuestions questions={script?.question_set || []} handleRowClick={handleRowClick} />
+        <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)}/>
     </Grid>
   );
 }
