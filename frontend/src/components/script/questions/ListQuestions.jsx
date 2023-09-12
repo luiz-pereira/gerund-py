@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 
 
 
-export default function ListQuestions({ questions }) {
+export default function ListQuestions({ questions, handleRowClick }) {
   return (
     <TableContainer>
       <Table sx={{ width: 'fit-content' }} aria-label="simple table">
@@ -24,6 +24,7 @@ export default function ListQuestions({ questions }) {
               hover
               key={question.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              onClick={() => handleRowClick(question.id)}
             >
               <TableCell>{question.content}</TableCell>
               <TableCell>{question.answerable ? <CheckIcon/> : <ClearIcon />}</TableCell>
@@ -37,5 +38,6 @@ export default function ListQuestions({ questions }) {
 }
 
 ListQuestions.propTypes = {
-  questions: PropTypes.array.isRequired
+  questions: PropTypes.array.isRequired,
+  handleRowClick: PropTypes.func.isRequired
 }

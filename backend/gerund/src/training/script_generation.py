@@ -26,6 +26,16 @@ def _identify_language(script):
     script.language_code = response
     script.save()
 
+def generate_question_variations(question, number_of_variations=100):
+    """Generate variations to a question."""
+    prompt = _build_question_variations_prompt(question, number_of_variations)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    variations = response.split("--- ")[1:]
+    for variation in variations:
+        variation = variation.strip()
+        incoming_embedding = IncomingEmbedding(content=variation.strip(), question=question, type="question")
+        incoming_embedding.save()
+
 def generate_potential_answers(script, partial=True):
     """Generate potential answers."""
     if partial:
@@ -166,5 +176,38 @@ def _build_answers_prompt(script, questions):
 
         Questions:
         {questions_prompt}
+        """
+    return [{"role": "system", "content": prompt}]
+
+def _build_question_variations_prompt(question, number_of_variations):
+    """Builds the prompt for generating variations to a question so that we can store in vector DB."""
+    prompt = f"""
+        You are an expert in spoken language and understand how to generate variations to a given question.
+        That question would have come from a customer in spoken language, so it is important to cover the many ways people can ask the same question.
+        Please always follow the following instructions to generate the variations:
+        - Provide {number_of_variations} variations to the question presented in 'Original Question'.
+        - Always use the same languange used in the question.
+        - Try to generate variations that are as different as possible among themselves.
+        - The variations must be coloquial and spoken language. Do not worry about being gramatically correct.
+        - The variations must be a representation of how people would ask the question in real life over a phone call.
+        - Use spoken language, like a people use in real life.
+        - Consider the many regional variations of the language.
+        - Consider that the question may be posed in different tones and moods.
+        - Ensure that you cover different personas, like a young adult, an adult, a senior from both sexes.
+        - Ensure that you cover different personalities, like a polite person, a rude person, a shy person, a talkative person.
+        - Present the answers in a unordered/unnumbered list using --- as a separator.
+            --- variation
+            --- variation
+        - gener
+
+        Context:
+        Company Presentation:
+        {question.script.presentation}
+
+        New Product:
+        {question.script.new_product}
+
+        Original Question:
+        {question.content}
         """
     return [{"role": "system", "content": prompt}]

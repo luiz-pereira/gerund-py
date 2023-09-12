@@ -18,11 +18,11 @@ class IncomingEmbeddingSerializer(serializers.ModelSerializer):
         fields = ('id', 'content', 'type', 'embedding')
 
 class QuestionSerializer(serializers.ModelSerializer):
-    incoming_embedding_set = IncomingEmbeddingSerializer(many=True, read_only=True)
+    incomingembedding_set = IncomingEmbeddingSerializer(many=True, read_only=True)
     answer = AnswerSerializer(read_only=True)
     class Meta:
         model = Question
-        fields = ('id', 'content', 'answer', 'answerable', 'incoming_embedding_set')
+        fields = ('id', 'content', 'answer', 'answerable', 'incomingembedding_set')
 
 class ScriptSerializer(serializers.ModelSerializer):
     question_set = QuestionSerializer(many=True, read_only=True)
