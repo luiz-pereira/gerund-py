@@ -26,6 +26,20 @@ def _identify_language(script):
     script.language_code = response
     script.save()
 
+def generate_script_questions_variations(script, number_of_questions=100, partial=True):
+    """Generate questions variations asynchronously."""
+    if not partial:
+        IncomingEmbedding.objects.filter(question__script=script).delete()
+
+    questions = script.question_set.filter(incomingembedding__isnull=True)
+    print("Started generating questions variations")
+    _do_generate_questions_variations(questions, number_of_questions)
+
+def _do_generate_questions_variations(questions, number_of_questions):
+    """Generate questions variations asynchronously."""
+    for question in questions:
+        generate_question_variations(question, number_of_questions)
+
 def generate_question_variations(question, number_of_variations=100):
     """Generate variations to a question."""
     prompt = _build_question_variations_prompt(question, number_of_variations)
@@ -155,6 +169,7 @@ def _build_answers_prompt(script, questions):
         I am building a script for cold calling customers to sell a new product, so I need potential answers to the questions that customers may ask.
         I need you to look at the questions below and also at established common sense to answer each of them.
         Please follow the instructions below to generate the answers.
+        - Be polite, charming and convincing. You are trying to sell a product.
         - Each answer must be answereable using the context provided unless it is very obvious to an average adult person.
         - The answers must be short and direct.
         - Always reply using the same languange used in the question.
@@ -182,23 +197,20 @@ def _build_answers_prompt(script, questions):
 def _build_question_variations_prompt(question, number_of_variations):
     """Builds the prompt for generating variations to a question so that we can store in vector DB."""
     prompt = f"""
-        You are an expert in spoken language and understand how to generate variations to a given question.
+        You are an expert in coloquial spoken language and customer service and know how users usually ask questions.
         That question would have come from a customer in spoken language, so it is important to cover the many ways people can ask the same question.
         Please always follow the following instructions to generate the variations:
-        - Provide {number_of_variations} variations to the question presented in 'Original Question'.
+        - generate {number_of_variations} variations of the question presented at the end of this prompt in.
+        - for some context, see 'Context' and 'New Product' below.
         - Always use the same languange used in the question.
         - Try to generate variations that are as different as possible among themselves.
-        - The variations must be coloquial and spoken language. Do not worry about being gramatically correct.
-        - The variations must be a representation of how people would ask the question in real life over a phone call.
-        - Use spoken language, like a people use in real life.
-        - Consider the many regional variations of the language.
-        - Consider that the question may be posed in different tones and moods.
-        - Ensure that you cover different personas, like a young adult, an adult, a senior from both sexes.
-        - Ensure that you cover different personalities, like a polite person, a rude person, a shy person, a talkative person.
+        - Do not censor bad words.
+        - The variations must be a representation of how people chat in real life over a phone call.
+        - Include regionalisms in some variations.
+        - Ensure that you cover different personas, under different levels of patience and politeness.
         - Present the answers in a unordered/unnumbered list using --- as a separator.
             --- variation
             --- variation
-        - gener
 
         Context:
         Company Presentation:
@@ -207,7 +219,7 @@ def _build_question_variations_prompt(question, number_of_variations):
         New Product:
         {question.script.new_product}
 
-        Original Question:
+        Question:
         {question.content}
         """
     return [{"role": "system", "content": prompt}]

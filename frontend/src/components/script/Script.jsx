@@ -43,6 +43,13 @@ export default function Script() {
     setLoading(false)
   }
 
+  const handleGenerateAllQuestionVariations = async () => {
+    setLoading(true)
+    const scriptResponse = await post(`scripts/${id}/generate_questions_variations`)
+    setValues(scriptResponse)
+    setLoading(false)
+  }
+
   useEffect(() => {
     fetchScript()
   }, [])
@@ -112,7 +119,7 @@ export default function Script() {
           onClick={handleSaveChanges}
           disabled={loading}
         >
-          {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Save Changes"}
+          {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Save Changes"}
         </Button>
         <Button
           variant="contained"
@@ -120,7 +127,7 @@ export default function Script() {
           onClick={handleGenerateQuestion}
           disabled={loading}
         >
-          {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Questions"}
+          {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Questions"}
         </Button>
         <Button
           variant="contained"
@@ -129,7 +136,16 @@ export default function Script() {
           onClick={handleGenerateAnswer}
           disabled={loading}
           >
-            {loading? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Answers"}
+            {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Answers"}
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            style={{ margin: 10 }}
+            onClick={handleGenerateAllQuestionVariations}
+            disabled={loading}
+          >
+            {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Question Variations"}
           </Button>
         <ListQuestions questions={script?.question_set || []} handleRowClick={handleRowClick} />
         <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)}/>

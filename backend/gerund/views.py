@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 
 from .serializers import OutgoingMessageSerializer, AnswerSerializer, IncomingEmbeddingSerializer, QuestionSerializer, ScriptSerializer
 from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
@@ -69,6 +69,16 @@ class ScriptView(viewsets.ModelViewSet):
             return Response(serializer.data)
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def generate_questions_variations(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_script_questions_variations(script)
+            return Response(status=HTTP_200_OK)
+        except:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
 
     @action(detail=True, methods=['post'])
     def generate_answers(self, request, pk=None):
