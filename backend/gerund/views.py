@@ -26,11 +26,6 @@ class QuestionView(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
 
-    def retrieve(self, request, pk=None):
-        question = Question.objects.get(pk=pk)
-        serializer = QuestionSerializer(question)
-        return Response(serializer.data)
-
     @action(detail=True, methods=['post'])
     def generate_variations(self, request, pk=None):
         question = self.get_object()
@@ -78,7 +73,6 @@ class ScriptView(viewsets.ModelViewSet):
             return Response(status=HTTP_200_OK)
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
-
 
     @action(detail=True, methods=['post'])
     def generate_answers(self, request, pk=None):
