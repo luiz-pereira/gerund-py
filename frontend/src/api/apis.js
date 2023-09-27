@@ -70,6 +70,30 @@ export async function patch(path, id, data) {
   return response;
 }
 
+export async function remove(path, id) {
+  const response = await fetch(
+    `${BASE_ENDPOINT + path}/${id}/`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    },
+  )
+    .then((response) => {
+      if (!response.ok) {
+        debugger
+        throw response;
+      }
+      return response.json();
+    })
+    .then((data) => data)
+    .catch((error) => {
+      return {error: {status: error.status, message: error.statusText}}
+    })
+
+  return response;
+}
+
+
 function normalizeData(data) {
   const snakeData =
     Object.entries(data)
