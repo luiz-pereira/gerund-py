@@ -19,10 +19,10 @@ pydub = "*"
 google-cloud-texttospeech = "*"
 pgvector = "*"
 psycopg2-binary = "*"
+celery = "*"
 
 [dev-packages]
 ipykernel = "*"
 
 [requires]
-python_version = "3.10"
-python_full_version = "3.10.12"
+python_version = "3.11"
