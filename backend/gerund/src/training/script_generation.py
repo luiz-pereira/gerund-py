@@ -1,13 +1,14 @@
+import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from gerund.models import Answer, Question, IncomingEmbedding, OutgoingMessage
 from gerund.src.ai import apis as ai_apis
 from gerund.src.ai.apis import Models
-import re
 
-import asyncio
 
 def generate_potential_questions(script, number_of_questions=100):
     """Generate potential questions."""
-    script.question_set.all().delete()
+    script.questions.all().delete()
     _identify_language(script)
     prompt = _build_questions_prompt(script, number_of_questions)
     _do_generate_questions(prompt, script)
@@ -26,36 +27,61 @@ def _identify_language(script):
     script.language_code = response
     script.save()
 
-def generate_script_questions_variations(script, number_of_questions=100, partial=True):
-    """Generate questions variations asynchronously."""
+def generate_script_questions_variations(script, number_of_variations=100, partial=True):
+    """Generate questions variations for a script in batches and concurrently"""
     if not partial:
         IncomingEmbedding.objects.filter(question__script=script).delete()
 
-    questions = script.question_set.filter(incomingembedding__isnull=True)
+    questions = script.questions.filter(incoming_embeddings__isnull=True)
     print("Started generating questions variations")
-    _do_generate_questions_variations(questions, number_of_questions)
+    _generate_questions_variations_in_batch(questions, number_of_variations)
 
-def _do_generate_questions_variations(questions, number_of_questions):
-    """Generate questions variations asynchronously."""
-    for question in questions:
-        generate_question_variations(question, number_of_questions)
+def _generate_questions_variations_in_batch(questions, number_of_variations, batch_size=4):
+    """
+    Generate questions variations in batches.
+
+    - The batch size defaults to 4 due to rate limiting on OpenAI API for GPT-4.
+    - Each completion is using ~2500 tokens, so we can only do 4 completions per minute.
+    - Each completion takes more than one minute to complete, so we can afford the 4 requests.
+
+    Tried using GPT-3, but it returns too much garbage.
+    """
+
+    for i in range(0, len(questions), batch_size):
+        _concurrent_generate_questions_variations(questions[i:i+batch_size], number_of_variations)
+
+def _concurrent_generate_questions_variations(questions, number_of_variations):
+    """Generate questions variations concurrently using Threads."""
+
+    futures = []
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for question in questions:
+            futures.append(executor.submit(generate_question_variations, question, number_of_variations))
+    for future in as_completed(futures):
+        try:
+            print(future.result())
+        except Exception as exc:
+            print(exc)
 
 def generate_question_variations(question, number_of_variations=100):
     """Generate variations to a question."""
+    print(f"Generating variations for question {question.id}")
+
     prompt = _build_question_variations_prompt(question, number_of_variations)
     response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
     variations = response.split("--- ")[1:]
     for variation in variations:
-        variation = variation.strip()
         incoming_embedding = IncomingEmbedding(content=variation.strip(), question=question, type="question")
         incoming_embedding.save()
+
+    return f"Generated {len(variations)} variations for question {question.id}"
 
 def generate_potential_answers(script, partial=True):
     """Generate potential answers."""
     if partial:
-        questions = script.question_set.select_related('answer').filter(answered=False)
+        questions = script.questions.select_related('answer').filter(answered=False)
     else:
-        questions = script.question_set.all()
+        questions = script.questions.all()
     prompt = _build_answers_prompt(script, questions)
     _do_generate_answers(prompt, questions)
 

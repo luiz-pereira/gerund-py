@@ -3,10 +3,10 @@ from google.cloud import texttospeech
 
 OPENAI_API_KEY = "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"
 openai.api_key = OPENAI_API_KEY
-COMPLETION_MODEL = "gpt-3.5-turbo"
 
 class Models:
-    GPT3 = "gpt-3.5-turbo"
+    GPT3 = "gpt-3.5-turbo-0613"
+    GPT3_16K = "gpt-3.5-turbo-16k-0613"
     GPT4 = "gpt-4-0613"
 
 
@@ -38,6 +38,7 @@ def produce_speech_binary(text, language=DEFAULT_LANGUAGE, voice=DEFAULT_VOICE, 
     )
     return response.audio_content
 
-def get_chat_completion(context, model=COMPLETION_MODEL):
+def get_chat_completion(context, model=Models.GPT3):
+    # TODO: Add an exception handler here.
     chat_completion = openai.ChatCompletion.create(model=model, messages=context)
     return chat_completion.choices[0].message.content
