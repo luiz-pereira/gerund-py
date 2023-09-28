@@ -39,12 +39,9 @@ class QuestionView(viewsets.ModelViewSet):
 
 class ScriptView(viewsets.ModelViewSet):
     serializer_class = ScriptSerializer
-    queryset = Script.objects.all()
 
-    def retrieve(self, request, pk=None):
-        script = Script.objects.get(pk=pk)
-        serializer = ScriptSerializer(script)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Script.objects.prefetch_related('questions__incoming_embeddings', 'questions__answer').all()
 
     def partial_update(self, request, pk=None):
         script = Script.objects.get(pk=pk)

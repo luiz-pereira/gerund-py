@@ -39,7 +39,7 @@ export default function ShowQuestion({ questionId, open, handleClose }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {question.incomingembedding_set?.map((inc) => (
+            {question.incoming_embeddings?.map((inc) => (
               <TableRow
                 hover
                 key={inc.id}

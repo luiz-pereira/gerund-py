@@ -18,17 +18,17 @@ class IncomingEmbeddingSerializer(serializers.ModelSerializer):
         fields = ('id', 'content', 'type', 'embedding')
 
 class QuestionSerializer(serializers.ModelSerializer):
-    incomingembedding_set = IncomingEmbeddingSerializer(many=True, read_only=True)
+    incoming_embeddings = IncomingEmbeddingSerializer(many=True, read_only=True)
     answer = AnswerSerializer(read_only=True)
     class Meta:
         model = Question
-        fields = ('id', 'content', 'answer', 'answerable', 'incomingembedding_set')
+        fields = ('id', 'content', 'answer', 'answerable', 'incoming_embeddings')
 
 class ScriptSerializer(serializers.ModelSerializer):
-    question_set = QuestionSerializer(many=True, read_only=True)
+    questions = QuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Script
-        fields = ('id', 'name', 'language_code', 'custom_prompt', 'presentation', 'new_product', 'question_set')
+        fields = ('id', 'name', 'language_code', 'custom_prompt', 'presentation', 'new_product', 'questions')
         name = serializers.CharField(validators=[UniqueValidator(queryset=Script.objects.all())])
 
