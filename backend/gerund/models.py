@@ -15,7 +15,7 @@ class Question(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    script = models.ForeignKey('Script', on_delete=models.CASCADE)
+    script = models.ForeignKey('Script', on_delete=models.CASCADE, related_name='questions')
     answerable = models.BooleanField(default=True)
     answered = models.BooleanField(default=False)
 
@@ -36,7 +36,7 @@ class OutgoingMessage(models.Model):
 class IncomingEmbedding(models.Model):
     content = models.TextField()
     type = models.CharField(max_length=36)
-    question = models.ForeignKey('Question', on_delete=models.CASCADE, null=True)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='incoming_embeddings', null=True)
     embedding = VectorField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

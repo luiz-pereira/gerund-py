@@ -20,6 +20,7 @@ google-cloud-texttospeech = "*"
 pgvector = "*"
 psycopg2-binary = "*"
 celery = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 ipykernel = "*"
