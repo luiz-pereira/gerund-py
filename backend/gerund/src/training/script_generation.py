@@ -13,6 +13,7 @@ def generate_potential_questions(script, number_of_questions=100):
     prompt = _build_questions_prompt(script, number_of_questions)
     _do_generate_questions(prompt, script)
 
+
 def _identify_language(script):
     """Identify the language of the script."""
     # get the language of the script
@@ -22,12 +23,17 @@ def _identify_language(script):
         ---
         {script.presentation}
         """
-    response = ai_apis.get_chat_completion([{"role": "system", "content": prompt}], model=Models.GPT4)
+    response = ai_apis.get_chat_completion(
+        [{"role": "system", "content": prompt}], model=Models.GPT4
+    )
     # set the language of the script
     script.language_code = response
     script.save()
 
-def generate_script_questions_variations(script, number_of_variations=100, partial=True):
+
+def generate_script_questions_variations(
+    script, number_of_variations=100, partial=True
+):
     """Generate questions variations for a script in batches and concurrently"""
     if not partial:
         IncomingEmbedding.objects.filter(question__script=script).delete()
@@ -36,7 +42,10 @@ def generate_script_questions_variations(script, number_of_variations=100, parti
     print("Started generating questions variations")
     _generate_questions_variations_in_batch(questions, number_of_variations)
 
-def _generate_questions_variations_in_batch(questions, number_of_variations, batch_size=4):
+
+def _generate_questions_variations_in_batch(
+    questions, number_of_variations, batch_size=4
+):
     """
     Generate questions variations in batches.
 
@@ -48,7 +57,10 @@ def _generate_questions_variations_in_batch(questions, number_of_variations, bat
     """
 
     for i in range(0, len(questions), batch_size):
-        _concurrent_generate_questions_variations(questions[i:i+batch_size], number_of_variations)
+        _concurrent_generate_questions_variations(
+            questions[i : i + batch_size], number_of_variations
+        )
+
 
 def _concurrent_generate_questions_variations(questions, number_of_variations):
     """Generate questions variations concurrently using Threads."""
@@ -56,12 +68,17 @@ def _concurrent_generate_questions_variations(questions, number_of_variations):
     futures = []
     with ThreadPoolExecutor(max_workers=10) as executor:
         for question in questions:
-            futures.append(executor.submit(generate_question_variations, question, number_of_variations))
+            futures.append(
+                executor.submit(
+                    generate_question_variations, question, number_of_variations
+                )
+            )
     for future in as_completed(futures):
         try:
             print(future.result())
         except Exception as exc:
             print(exc)
+
 
 def generate_question_variations(question, number_of_variations=100):
     """Generate variations to a question."""
@@ -71,19 +88,23 @@ def generate_question_variations(question, number_of_variations=100):
     response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
     variations = response.split("--- ")[1:]
     for variation in variations:
-        incoming_embedding = IncomingEmbedding(content=variation.strip(), question=question, type="question")
+        incoming_embedding = IncomingEmbedding(
+            content=variation.strip(), question=question, type="question"
+        )
         incoming_embedding.save()
 
     return f"Generated {len(variations)} variations for question {question.id}"
 
+
 def generate_potential_answers(script, partial=True):
     """Generate potential answers."""
     if partial:
-        questions = script.questions.select_related('answer').filter(answered=False)
+        questions = script.questions.select_related("answer").filter(answered=False)
     else:
         questions = script.questions.all()
     prompt = _build_answers_prompt(script, questions)
     _do_generate_answers(prompt, questions)
+
 
 def _do_generate_questions(prompt, script):
     """Generate questions."""
@@ -96,6 +117,7 @@ def _do_generate_questions(prompt, script):
         question = Question(content=question.strip(), script=script)
         question.save()
 
+
 def _do_generate_answers(prompt, questions):
     """Generate answers."""
     # get the answers
@@ -105,7 +127,7 @@ def _do_generate_answers(prompt, questions):
     # then loop through them and save them
     for answer in answers:
         # q: how to use regex to get the number between brackets?
-        found_id = re.findall(r'\[.*?\]', answer)
+        found_id = re.findall(r"\[.*?\]", answer)
         if len(found_id) == 0:
             continue
 
@@ -130,14 +152,18 @@ def _do_generate_answers(prompt, questions):
         question.save()
         answer.save()
 
+
 def fill_incomming_embeddings():
     """Fill the embeddings for incomming messages."""
     # filter for embeddings that have not been filled
     filtered_incomming_embeddings = IncomingEmbedding.objects.filter(embedding=None)
     # then loop through them and fill them with openai embeddings
     for incomming_embedding in filtered_incomming_embeddings:
-        incomming_embedding.embedding = ai_apis.produce_embedding(incomming_embedding.content)
+        incomming_embedding.embedding = ai_apis.produce_embedding(
+            incomming_embedding.content
+        )
         incomming_embedding.save()
+
 
 def fill_speech_binaries():
     """Fill the speech binaries for outgoing messages."""
@@ -147,6 +173,7 @@ def fill_speech_binaries():
     for outgoing in filtered_outgoing:
         outgoing.speech_binary = ai_apis.produce_speech_binary(outgoing.content)
         outgoing.save()
+
 
 def _build_questions_prompt(script, number_of_questions):
     """Builds the prompt for the chatbot."""
@@ -182,6 +209,7 @@ def _build_questions_prompt(script, number_of_questions):
         {custom_prompt}
         """
     return [{"role": "system", "content": prompt}]
+
 
 def _build_answers_prompt(script, questions):
     """Builds the prompt for the chatbot."""
@@ -219,6 +247,7 @@ def _build_answers_prompt(script, questions):
         {questions_prompt}
         """
     return [{"role": "system", "content": prompt}]
+
 
 def _build_question_variations_prompt(question, number_of_variations):
     """Builds the prompt for generating variations to a question so that we can store in vector DB."""

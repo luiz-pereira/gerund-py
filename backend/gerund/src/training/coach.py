@@ -41,6 +41,7 @@ class Coach:
 
         if nearest_neighbor.distance < min_distance:
             return nearest_neighbor
+
         else:
             return None
 

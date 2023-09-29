@@ -1,32 +1,41 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 
-from .serializers import OutgoingMessageSerializer, AnswerSerializer, IncomingEmbeddingSerializer, QuestionSerializer, ScriptSerializer
+from .serializers import (
+    OutgoingMessageSerializer,
+    AnswerSerializer,
+    IncomingEmbeddingSerializer,
+    QuestionSerializer,
+    ScriptSerializer,
+)
 from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
 from gerund.src.training import script_generation
 
 # Create your views here.
 
+
 class OutgoingVariationView(viewsets.ModelViewSet):
     serializer_class = OutgoingMessageSerializer
     queryset = OutgoingMessage.objects.all()
+
 
 class AnswerView(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
     queryset = Answer.objects.all()
 
+
 class IncomingEmbeddingView(viewsets.ModelViewSet):
     serializer_class = IncomingEmbeddingSerializer
     queryset = IncomingEmbedding.objects.all()
+
 
 class QuestionView(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def generate_variations(self, request, pk=None):
         question = self.get_object()
         try:
@@ -37,11 +46,14 @@ class QuestionView(viewsets.ModelViewSet):
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
 
+
 class ScriptView(viewsets.ModelViewSet):
     serializer_class = ScriptSerializer
 
     def get_queryset(self):
-        return Script.objects.prefetch_related('questions__incoming_embeddings', 'questions__answer').all()
+        return Script.objects.prefetch_related(
+            "questions__incoming_embeddings", "questions__answer"
+        ).all()
 
     def partial_update(self, request, pk=None):
         script = Script.objects.get(pk=pk)
@@ -51,7 +63,7 @@ class ScriptView(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def generate_questions(self, request, pk=None):
         script = self.get_object()
         try:
@@ -62,7 +74,7 @@ class ScriptView(viewsets.ModelViewSet):
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def generate_questions_variations(self, request, pk=None):
         script = self.get_object()
         try:
@@ -71,7 +83,7 @@ class ScriptView(viewsets.ModelViewSet):
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def generate_answers(self, request, pk=None):
         script = self.get_object()
         try:
