@@ -10,9 +10,11 @@ STREAMING_LIMIT = 240000  # 4 minutes
 SAMPLE_RATE = 16000
 CHUNK_SIZE = 100  # 100ms
 
+
 def get_current_time() -> int:
     """Return Current Time in MS."""
     return int(round(time.time() * 1000))
+
 
 class HumanTranscription:
     """Controls the audio capture and transcription process."""
@@ -28,10 +30,12 @@ class HumanTranscription:
         return self
 
     def __exit__(self, type, value, traceback):
-        """Closes the transcription stream and releases resources. """
+        """Closes the transcription stream and releases resources."""
         self.closed = True
 
-    def transcription_generator(self, language_code = "pt-BR", streaming_limit = STREAMING_LIMIT):
+    def transcription_generator(
+        self, language_code="pt-BR", streaming_limit=STREAMING_LIMIT
+    ):
         """opens audio stream and serves responses through a generator.
 
         Returns:
@@ -45,10 +49,10 @@ class HumanTranscription:
         config = speech.RecognitionConfig(
             encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
             sample_rate_hertz=SAMPLE_RATE,
-            language_code= language_code,
+            language_code=language_code,
             max_alternatives=1,
             enable_automatic_punctuation=True,
-            model="latest_long"
+            model="latest_long",
         )
 
         # configures streaming settings for recognition
@@ -80,7 +84,6 @@ class HumanTranscription:
                     break
 
                 for response in responses:
-
                     if not response.results:
                         continue
 
@@ -93,17 +96,17 @@ class HumanTranscription:
 
                     current_time = get_current_time()
 
-
                     yield transcript, current_time
+
 
 def main():
     print("starting transcription process")
     with HumanTranscription() as stream:
         for transcript, transcript_time in stream.transcription_generator():
-            readable_time = time.strftime('%x %X')
-            sys.stdout.write(GREEN)
+            readable_time = time.strftime("%x %X")
             sys.stdout.write("\033[K")
             sys.stdout.write(str(readable_time) + " - " + transcript + "\n")
+
 
 if __name__ == "__main__":
     main()

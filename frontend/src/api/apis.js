@@ -80,7 +80,6 @@ export async function remove(path, id) {
   )
     .then((response) => {
       if (!response.ok) {
-        debugger
         throw response;
       }
       return response.json();
@@ -92,7 +91,6 @@ export async function remove(path, id) {
 
   return response;
 }
-
 
 function normalizeData(data) {
   const snakeData =
