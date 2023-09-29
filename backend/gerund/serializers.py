@@ -1,24 +1,49 @@
 from rest_framework import serializers
-from .models import Answer, Question, OutgoingMessages, IncomingEmbeddings
+from rest_framework.validators import UniqueValidator
+from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
 
-class OutgoingMessagesSerializer(serializers.ModelSerializer):
+
+class OutgoingMessageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OutgoingMessages
-        fields = ('id', 'content', 'type', 'speech_binary')
+        model = OutgoingMessage
+        fields = ("id", "content", "type", "speech_binary")
+
 
 class AnswerSerializer(serializers.ModelSerializer):
-    outgoing_message_set = OutgoingMessagesSerializer(many=True, read_only=True)
     class Meta:
         model = Answer
-        fields = ('id', 'content', 'question')
+        fields = ("id", "content", "question")
 
-class IncomingEmbeddingsSerializer(serializers.ModelSerializer):
+
+class IncomingEmbeddingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = IncomingEmbeddings
-        fields = ('id', 'content', 'type', 'embedding')
+        model = IncomingEmbedding
+        fields = ("id", "content", "type", "embedding")
+
 
 class QuestionSerializer(serializers.ModelSerializer):
-    incoming_embedding_set = IncomingEmbeddingsSerializer(many=True, read_only=True)
+    incoming_embeddings = IncomingEmbeddingSerializer(many=True, read_only=True)
+    answer = AnswerSerializer(read_only=True)
+
     class Meta:
         model = Question
-        fields = ('id', 'content', 'answer')
+        fields = ("id", "content", "answer", "answerable", "incoming_embeddings")
+
+
+class ScriptSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Script
+        fields = (
+            "id",
+            "name",
+            "language_code",
+            "custom_prompt",
+            "presentation",
+            "new_product",
+            "questions",
+        )
+        name = serializers.CharField(
+            validators=[UniqueValidator(queryset=Script.objects.all())]
+        )

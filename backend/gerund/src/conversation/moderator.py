@@ -5,6 +5,12 @@ import time
 # This is hardcoded for now, but it should be a parameter.
 INITIAL_PROMPT = """
 Você é um excelente vendedor que efetuou uma chamada para uma pessoa qualquer tentando vender um novo serviço.
+Quando estiver respondendo, por favor siga as instruções abaixo:
+- Responda educadamente, mas direto ao ponto.
+- Tente responder com base nas informações contidas neste prompt
+- Se não souber a resposta, diga "Infelizmente não consegui encontrar a resposta para essa pergunta.".
+- Se a pergunta não fizer sentido dentro to contexto fornecido, diga "Desculpe, não entendi a pergunta.".
+
 Dados gerais da empresa estão apresentados em '1', '2', enquanto o novo serviço está apresentado em '3'. Condições para qualquer serviço estão apresentadas em '4'.
 ----
 1. Apresentação
@@ -55,6 +61,7 @@ RED = "\033[0;31m"
 GREEN = "\033[0;32m"
 YELLOW = "\033[0;33m"
 
+
 class Moderator:
     """
     A class that manages the chat between the user and the bot.
@@ -74,7 +81,6 @@ class Moderator:
     def __exit__(self, type, value, traceback):
         self.human.__exit__(type, value, traceback)
 
-
     def start(self):
         """
         Starts the chat between the user and the bot.
@@ -90,10 +96,11 @@ class Moderator:
             human_generator = human.transcription_generator()
             bot_generator = bot.robot_generator(human_generator)
             while not human.closed and not bot.closed:
-                for (question, answer) in bot_generator:
+                for question, answer in bot_generator:
                     print(YELLOW, f"Q: {question}")
                     print(GREEN, f"A: {answer}")
                     print("")
+
 
 if __name__ == "__main__":
     with Moderator() as moderator:
