@@ -67,7 +67,7 @@ export default function Script() {
     setValues(scriptResponse)
   }
 
-  const handleRowClick = (questionId) => {
+  const handleQuestionClick = (questionId) => {
     setSelectedQuestionId(questionId)
   }
 
@@ -149,7 +149,7 @@ export default function Script() {
           >
             {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Question Variations"}
           </Button>
-        <ListQuestions questions={script?.questions || []} handleRowClick={handleRowClick} />
+        <ListQuestions questions={script?.questions || []} handleQuestionClick={handleQuestionClick} />
         <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)}/>
     </Grid>
   );
