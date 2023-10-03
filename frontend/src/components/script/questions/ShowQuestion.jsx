@@ -3,7 +3,7 @@ import { Button, Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell
 import PropTypes from 'prop-types'
 import { get, post } from '../../../api/apis'
 
-export default function ShowQuestion({ questionId, open, handleClose }) {
+export default function ShowQuestion ({ questionId, open, handleClose }) {
   const [question, setQuestion] = useState([])
   const fetchQuestion = async () => {
     const questionResponse = await get(`questions/${questionId}`)
@@ -11,7 +11,7 @@ export default function ShowQuestion({ questionId, open, handleClose }) {
   }
 
   useEffect(() => {
-    if (questionId){
+    if (questionId) {
       fetchQuestion()
     }
   }, [questionId])
@@ -22,16 +22,20 @@ export default function ShowQuestion({ questionId, open, handleClose }) {
   }
 
   return (
-    <Dialog onClose={handleClose} fullWidth={true} open={open}>
-      <DialogTitle>Id: {question.id}</DialogTitle>
-      <Button variant='outlined' onClick={handleGenerateVariations}>Generate Variations</Button>
+    <Dialog onClose={handleClose} fullWidth open={open}>
+      <DialogTitle>
+        Id:
+        {' '}
+        {question.id}
+      </DialogTitle>
+      <Button variant="outlined" onClick={handleGenerateVariations}>Generate Variations</Button>
       <DialogContent>
         <Typography variant="h6">Question</Typography>
         <Typography>{question.content}</Typography>
       </DialogContent>
       <TableContainer>
         <Table sx={{ width: 'fit-content' }} aria-label="simple table">
-          <caption style={{captionSide: "top"}}>Scripts</caption>
+          <caption style={{ captionSide: 'top' }}>Scripts</caption>
           <TableHead>
             <TableRow>
               <TableCell>Id</TableCell>
@@ -57,7 +61,7 @@ export default function ShowQuestion({ questionId, open, handleClose }) {
 }
 
 ShowQuestion.propTypes = {
-  questionId: PropTypes.number.isRequired,
+  questionId: PropTypes.number,
   open: PropTypes.bool,
   handleClose: PropTypes.func.isRequired
 }

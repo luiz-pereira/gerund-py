@@ -2,13 +2,25 @@ env:
   browser: true
   es2021: true
 extends:
-  - eslint:recommended
+  - standard
   - plugin:react/recommended
 parserOptions:
   ecmaVersion: latest
   sourceType: module
 plugins:
   - react
-rules:
-  no-unused-vars: warn
-  no-debugger: warn
+rules: {
+  "react/jsx-wrap-multilines": ["error", {
+   "declaration": "parens-new-line",
+    "assignment": "parens-new-line",
+    "return": "parens-new-line",
+    "arrow": "parens-new-line",
+    "condition": "parens-new-line",
+    "logical": "parens-new-line",
+    "prop": "parens-new-line"
+  }
+  ]
+}
+settings:
+  react:
+    version: detect
