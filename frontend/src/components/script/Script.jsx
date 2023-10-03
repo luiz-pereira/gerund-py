@@ -1,25 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import { Grid, TextField, Button, Box, CircularProgress } from '@mui/material';
-import { get, post, patch } from '../../api/apis'
+import React, { useEffect, useState } from 'react'
+import { Grid, TextField, Button, Box, CircularProgress } from '@mui/material'
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import { useParams } from 'react-router-dom'
 import ListQuestions from './questions/ListQuestions'
 import ShowQuestion from './questions/ShowQuestion'
+import { get, post, patch } from '../../api/apis'
 
-export default function Script() {
-  const [name, setName] = useState('');
-  const [customPrompt, setCustomPrompt] = useState('');
-  const [presentation, setPresentation] = useState('');
-  const [newProduct, setNewProduct] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [script, setScript] = useState(null);
+export default function Script () {
+  const [name, setName] = useState('')
+  const [customPrompt, setCustomPrompt] = useState('')
+  const [presentation, setPresentation] = useState('')
+  const [newProduct, setNewProduct] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [script, setScript] = useState(null)
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
-  const { id } = useParams();
-
-
-  const fetchScript = async () => {
-    const scriptResponse = await get("scripts/" + id)
-    setValues(scriptResponse)
-  }
+  const { id } = useParams()
 
   const setValues = (scriptResponse) => {
     setScript(scriptResponse)
@@ -27,6 +22,11 @@ export default function Script() {
     setCustomPrompt(scriptResponse.custom_prompt)
     setPresentation(scriptResponse.presentation)
     setNewProduct(scriptResponse.new_product)
+  }
+
+  const fetchScript = async () => {
+    const scriptResponse = await get(`scripts/${id}`)
+    setValues(scriptResponse)
   }
 
   const handleGenerateQuestion = async () => {
@@ -50,7 +50,12 @@ export default function Script() {
     setLoading(false)
   }
 
-
+  const handleGenerateAllAnswerVariations = async () => {
+    setLoading(true)
+    const scriptResponse = await post(`scripts/${id}/generate_aswers_variations`)
+    setValues(scriptResponse)
+    setLoading(false)
+  }
 
   useEffect(() => {
     fetchScript()
@@ -58,9 +63,9 @@ export default function Script() {
 
   const handleSaveChanges = async () => {
     setLoading(true)
-    const scriptResponse = await patch("scripts", id, {name, customPrompt, presentation, newProduct})
+    const scriptResponse = await patch('scripts', id, { name, customPrompt, presentation, newProduct })
     if (scriptResponse.error) {
-      console.log("error")
+      console.log('error')
       return
     }
     setLoading(false)
@@ -73,7 +78,7 @@ export default function Script() {
 
   return (
     <Grid container>
-      <Grid container direction={'column'}>
+      <Grid container direction="column">
         <TextField
           id="outlined-multiline-static"
           label="Name"
@@ -81,6 +86,7 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={name}
           disabled={loading}
+          onBlur={handleSaveChanges}
           onChange={(e) => setName(e.target.value)}
         />
         <TextField
@@ -91,6 +97,7 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={customPrompt}
           disabled={loading}
+          onBlur={handleSaveChanges}
           onChange={(e) => setCustomPrompt(e.target.value)}
         />
         <TextField
@@ -101,6 +108,7 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={presentation}
           disabled={loading}
+          onBlur={handleSaveChanges}
           onChange={(e) => setPresentation(e.target.value)}
         />
         <TextField
@@ -111,46 +119,80 @@ export default function Script() {
           style={{ width: '50%', margin: 10 }}
           value={newProduct}
           disabled={loading}
+          onBlur={handleSaveChanges}
           onChange={(e) => setNewProduct(e.target.value)}
         />
       </Grid>
-        <Button
-          variant="contained"
-          color='warning'
-          style={{ margin: 10 }}
-          onClick={handleSaveChanges}
-          disabled={loading}
-        >
-          {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Save Changes"}
-        </Button>
+      <Grid container direction="row" alignItems="center">
         <Button
           variant="contained"
           style={{ margin: 10 }}
           onClick={handleGenerateQuestion}
           disabled={loading}
         >
-          {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Questions"}
+          {loading
+            ? (
+            <Box>
+              <CircularProgress size={12} />
+              Generating...
+            </Box>
+              )
+            : 'Generate Questions'}
         </Button>
+        <KeyboardDoubleArrowRightIcon />
         <Button
           variant="contained"
-          color='secondary'
+          color="error"
+          style={{ margin: 10 }}
+          onClick={handleGenerateAllQuestionVariations}
+          disabled={loading}
+        >
+          {loading
+            ? (
+            <Box>
+              <CircularProgress size={12} />
+              Generating...
+            </Box>
+              )
+            : 'Generate Question Variations'}
+        </Button>
+        <KeyboardDoubleArrowRightIcon />
+        <Button
+          variant="contained"
+          color="secondary"
           style={{ margin: 10 }}
           onClick={handleGenerateAnswer}
           disabled={loading}
-          >
-            {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Answers"}
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            style={{ margin: 10 }}
-            onClick={handleGenerateAllQuestionVariations}
-            disabled={loading}
-          >
-            {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Question Variations"}
-          </Button>
-        <ListQuestions questions={script?.questions || []} handleQuestionClick={handleQuestionClick} fetchScript={fetchScript}/>
-        <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)}/>
+        >
+          {loading
+            ? (
+            <Box>
+              <CircularProgress size={12} />
+              Generating...
+            </Box>
+              )
+            : 'Generate Answers'}
+        </Button>
+        <KeyboardDoubleArrowRightIcon />
+        <Button
+          variant="contained"
+          color="warning"
+          style={{ margin: 10 }}
+          onClick={handleGenerateAnswer}
+          disabled={loading}
+        >
+          {loading
+            ? (
+            <Box>
+              <CircularProgress size={12} />
+              Generating...
+            </Box>
+              )
+            : 'Generate Answer Variations'}
+        </Button>
+      </Grid>
+      <ListQuestions questions={script?.questions || []} handleQuestionClick={handleQuestionClick} fetchScript={fetchScript} />
+      <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)} />
     </Grid>
-  );
+  )
 }

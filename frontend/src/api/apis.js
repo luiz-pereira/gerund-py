@@ -85,7 +85,9 @@ export async function remove(path, id) {
       }
       return response.json();
     })
-    .then((data) => data)
+    .then((data) => {
+      return data
+    })
     .catch((error) => {
       return {error: {status: error.status, message: error.statusText}}
     })
