@@ -149,7 +149,7 @@ export default function Script() {
           >
             {loading ? <Box><CircularProgress size={12}/>Generating...</Box> : "Generate Question Variations"}
           </Button>
-        <ListQuestions questions={script?.questions || []} handleQuestionClick={handleQuestionClick} />
+        <ListQuestions questions={script?.questions || []} handleQuestionClick={handleQuestionClick} fetchScript={fetchScript}/>
         <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)}/>
     </Grid>
   );

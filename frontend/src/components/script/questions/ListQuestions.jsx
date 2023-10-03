@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
+import { Button, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types'
@@ -7,7 +7,7 @@ import { patch, post, remove } from '../../../api/apis'
 
 
 
-export default function ListQuestions({ questions, handleQuestionClick }) {
+export default function ListQuestions({ questions, handleQuestionClick, fetchScript }) {
   const [questionsState, setQuestionsState] = useState([])
   const [changingAnswers, setChangingAnswers] = useState([])
 
@@ -18,7 +18,7 @@ export default function ListQuestions({ questions, handleQuestionClick }) {
   const handleDeleteQuestion = (e, id) => {
     e.stopPropagation()
     remove("questions", id)
-    setQuestionsState(questionsState.filter((q) => q.id !== id))
+    fetchScript()
   }
 
   const toggleChangingAnswer = (e, questionId) => {
@@ -27,23 +27,35 @@ export default function ListQuestions({ questions, handleQuestionClick }) {
     setChangingAnswers(newChangingAnswers)
   }
 
-  const handleChangeAnswer = (e, answer, newContent) => {
-    toggleChangingAnswer(e, answer.question)
+  const handleChangeAnswer = (e, question) => {
     e.stopPropagation()
-    if (answer.id) {
-      patch("answers", answer.id, {content: newContent})
+
+    const newContent = e.target.value
+    toggleChangingAnswer(e, question.id)
+
+    if (newContent === question.answer?.content) {
+      return
+    }
+
+    if (question.answer) {
+      patch("answers", question.answer.id, {content: newContent})
     } else {
       // create new answer
-      post("answers", answer.id, {content: newContent, questionId: answer.question})
+      post("answers", {content: newContent, question: question.id})
     }
+    fetchScript()
   }
 
   const renderAnswer = (question) => {
     if (changingAnswers.includes(question.id)) {
 
-      return <TextField onBlur={(e) => handleChangeAnswer(e, question.answer, e.target.value)} defaultValue={question.answer ? question.answer.content : ''} focused/>
+      return (
+        <Grid flex={true} alignContent={"center"}>
+          <TextField onBlur={(e) => handleChangeAnswer(e, question)} multiline minRows={2} autoFocus style={{width: "70%"}} defaultValue={question.answer ? question.answer.content : ''}/>
+        </Grid>
+      )
     } else {
-      return (<Typography color={question.answer ? 'black' : 'firebrick'} onClick={(e) => toggleChangingAnswer(e, question.id)}>{question.answer ? question.answer.content : ''}</Typography>)
+      return (<Typography color={question.answer ? 'black' : 'firebrick'} onClick={(e) => toggleChangingAnswer(e, question.id)}>{question.answer ? question.answer.content : '--no-answer--'}</Typography>)
     }
   }
 
@@ -71,7 +83,7 @@ export default function ListQuestions({ questions, handleQuestionClick }) {
               <TableCell>
                 <Button variant="contained" color="error" size="small" style={{margin: 5}} onClick={(e) => handleDeleteQuestion(e, question.id)}>Delete</Button>
               </TableCell>
-              <TableCell align="right">
+              <TableCell>
                 {renderAnswer(question)}
               </TableCell>
             </TableRow>
@@ -84,5 +96,6 @@ export default function ListQuestions({ questions, handleQuestionClick }) {
 
 ListQuestions.propTypes = {
   questions: PropTypes.array.isRequired,
-  handleQuestionClick: PropTypes.func.isRequired
+  handleQuestionClick: PropTypes.func.isRequired,
+  fetchScript: PropTypes.func.isRequired
 }

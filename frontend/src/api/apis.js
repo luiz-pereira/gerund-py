@@ -20,7 +20,7 @@ export async function get(path) {
 }
 
 export async function post(path, data={}) {
-  const body = normalizeData(data);
+  const body = normalizeData(data)
   const response = await fetch(
     `${BASE_ENDPOINT + path}/`,
     {
