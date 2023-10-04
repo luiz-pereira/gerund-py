@@ -1,35 +1,88 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import CheckIcon from '@mui/icons-material/Check';
-import ClearIcon from '@mui/icons-material/Clear';
+import {
+  Button, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+} from '@mui/material'
 import PropTypes from 'prop-types'
-import { remove } from '../../../api/apis'
+import { patch, post, remove } from '../../../api/apis'
 
-
-
-export default function ListQuestions({ questions, handleRowClick }) {
+export default function ListQuestions ({ questions, handleQuestionClick, handleAnswerClick, fetchScript }) {
   const [questionsState, setQuestionsState] = useState([])
+  const [changingAnswers, setChangingAnswers] = useState([])
+  const [loadingQuestions, setLoadingQuestions] = useState([])
 
   useEffect(() => {
-    setQuestionsState(questions)
+    // order questions by answer_id
+    const sortedQuestions = questions.sort((a, b) => {
+      if (a.answer && b.answer) {
+        return a.id - b.id
+      } if (a.answer) {
+        return 1
+      } if (b.answer) {
+        return -1
+      }
+      return 0
+    })
+    setQuestionsState(sortedQuestions)
   }, [questions])
 
-  const handleDeleteQuestion = (e, id) => {
+  const handleDeleteQuestion = async (e, id) => {
     e.stopPropagation()
-    remove("questions", id)
-    setQuestionsState(questionsState.filter((q) => q.id !== id))
+    setLoadingQuestions([...loadingQuestions, id])
+    await remove('questions', id)
+    setLoadingQuestions(loadingQuestions.filter((a) => a !== id))
+    fetchScript()
+  }
+
+  const toggleChangingAnswer = (e, questionId) => {
+    e.stopPropagation()
+    const newChangingAnswers = changingAnswers.includes(questionId) ? changingAnswers.filter((a) => a !== questionId) : [...changingAnswers, questionId]
+    setChangingAnswers(newChangingAnswers)
+  }
+
+  const handleChangeAnswer = async (e, question) => {
+    const newContent = e.target.value
+    if (newContent === question.answer?.content) {
+      toggleChangingAnswer(e, question.id)
+      return
+    }
+
+    setLoadingQuestions([...loadingQuestions, question.id])
+
+    if (question.answer) {
+      await patch('answers', question.answer.id, { content: newContent })
+    } else {
+      // create new answer
+      await post('answers', { content: newContent, question: question.id })
+    }
+
+    toggleChangingAnswer(e, question.id)
+    fetchScript()
+    setLoadingQuestions(loadingQuestions.filter((a) => a !== question.id))
+  }
+
+  const renderAnswer = (question) => {
+    if (changingAnswers.includes(question.id)) {
+      return (
+        <Grid flex alignContent="center">
+          <TextField onBlur={(e) => handleChangeAnswer(e, question)} multiline minRows={2} autoFocus style={{ width: '70%' }} defaultValue={question.answer ? question.answer.content : ''} />
+        </Grid>
+      )
+    }
+    return (
+      <Typography color={question.answer ? 'black' : 'firebrick'} onClick={(e) => toggleChangingAnswer(e, question.id)}>{question.answer ? question.answer.content : '--no-answer--'}</Typography>
+    )
   }
 
   return (
     <TableContainer>
       <Table sx={{ width: 'fit-content' }} aria-label="simple table">
-        <caption style={{captionSide: "top"}}>Scripts</caption>
+        <caption style={{ captionSide: 'top' }}>Scripts</caption>
         <TableHead>
           <TableRow>
             <TableCell>Question</TableCell>
-            <TableCell>Answerable?</TableCell>
             <TableCell>Actions</TableCell>
             <TableCell>Answer</TableCell>
+            <TableCell>Answer Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -38,14 +91,26 @@ export default function ListQuestions({ questions, handleRowClick }) {
               hover
               key={question.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              onClick={() => handleRowClick(question.id)}
             >
-              <TableCell>{question.content}</TableCell>
-              <TableCell>{question.answerable ? <CheckIcon/> : <ClearIcon />}</TableCell>
+              <TableCell onClick={() => handleQuestionClick(question.id)}>{question.content}</TableCell>
               <TableCell>
-                <Button variant="contained" color="error" size="small" style={{margin: 5}} onClick={(e) => handleDeleteQuestion(e, question.id)}>Delete</Button>
+                <Button variant="contained" color="error" size="small" style={{ margin: 5 }} disabled={loadingQuestions.includes(question.id)} onClick={(e) => handleDeleteQuestion(e, question.id)}>Delete</Button>
               </TableCell>
-              <TableCell align="right" style={{color: question.answer ? 'black' : 'firebrick'}}>{question.answer ? question.answer.content : '-- no answer --'}</TableCell>
+              <TableCell>
+                {renderAnswer(question)}
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  size="small"
+                  style={{ margin: 5, fontSize: 8 }}
+                  disabled={loadingQuestions.includes(question.id)}
+                  onClick={() => handleAnswerClick(question.answer?.id)}
+                >
+                  See Variations
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -56,5 +121,7 @@ export default function ListQuestions({ questions, handleRowClick }) {
 
 ListQuestions.propTypes = {
   questions: PropTypes.array.isRequired,
-  handleRowClick: PropTypes.func.isRequired
+  handleAnswerClick: PropTypes.func.isRequired,
+  handleQuestionClick: PropTypes.func.isRequired,
+  fetchScript: PropTypes.func.isRequired
 }

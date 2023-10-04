@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { get } from '../../api/apis'
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
-
-export default function ListScripts() {
-  const navigate = useNavigate();
+export default function ListScripts () {
+  const navigate = useNavigate()
   const [scripts, setScripts] = useState([])
 
   const fetchScripts = async () => {
@@ -20,7 +19,7 @@ export default function ListScripts() {
   return (
     <TableContainer>
       <Table sx={{ width: 200 }} aria-label="simple table">
-        <caption style={{captionSide: "top"}}>Scripts</caption>
+        <caption style={{ captionSide: 'top' }}>Scripts</caption>
         <TableHead>
           <TableRow>
             <TableCell align="right">id</TableCell>

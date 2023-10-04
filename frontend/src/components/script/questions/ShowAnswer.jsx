@@ -3,22 +3,22 @@ import { Button, Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell
 import PropTypes from 'prop-types'
 import { get, post } from '../../../api/apis'
 
-export default function ShowQuestion ({ questionId, open, handleClose }) {
-  const [question, setQuestion] = useState([])
-  const fetchQuestion = async () => {
-    const questionResponse = await get(`questions/${questionId}`)
-    setQuestion(questionResponse)
+export default function ShowAnswer ({ answerId, open, handleClose }) {
+  const [answer, setAnswer] = useState([])
+  const fetchAnswer = async () => {
+    const answerResponse = await get(`answers/${answerId}`)
+    setAnswer(answerResponse)
   }
 
   useEffect(() => {
-    if (questionId) {
-      fetchQuestion()
+    if (answerId) {
+      fetchAnswer()
     }
-  }, [questionId])
+  }, [answerId])
 
   const handleGenerateVariations = async () => {
-    const questionResponse = await post(`questions/${questionId}/generate_variations`)
-    setQuestion(questionResponse)
+    const answerResponse = await post(`answers/${answerId}/generate_variations`)
+    setAnswer(answerResponse)
   }
 
   return (
@@ -26,12 +26,12 @@ export default function ShowQuestion ({ questionId, open, handleClose }) {
       <DialogTitle>
         Id:
         {' '}
-        {question.id}
+        {answer.id}
       </DialogTitle>
       <Button variant="outlined" onClick={handleGenerateVariations}>Generate Variations</Button>
       <DialogContent>
-        <Typography variant="h6">Question</Typography>
-        <Typography>{question.content}</Typography>
+        <Typography variant="h6">Answer</Typography>
+        <Typography>{answer.content}</Typography>
       </DialogContent>
       <TableContainer>
         <Table sx={{ width: 'fit-content' }} aria-label="simple table">
@@ -43,7 +43,7 @@ export default function ShowQuestion ({ questionId, open, handleClose }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {question.incoming_embeddings?.map((inc) => (
+            {answer.outgoing_messages?.map((inc) => (
               <TableRow
                 hover
                 key={inc.id}
@@ -60,8 +60,8 @@ export default function ShowQuestion ({ questionId, open, handleClose }) {
   )
 }
 
-ShowQuestion.propTypes = {
-  questionId: PropTypes.number,
+ShowAnswer.propTypes = {
+  answerId: PropTypes.number,
   open: PropTypes.bool,
   handleClose: PropTypes.func.isRequired
 }
