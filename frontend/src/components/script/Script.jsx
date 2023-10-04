@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import ListQuestions from './questions/ListQuestions'
 import ShowQuestion from './questions/ShowQuestion'
 import { get, post, patch } from '../../api/apis'
+import ShowAnswer from './questions/ShowAnswer'
 
 export default function Script () {
   const [name, setName] = useState('')
@@ -14,6 +15,7 @@ export default function Script () {
   const [loading, setLoading] = useState(false)
   const [script, setScript] = useState(null)
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
+  const [selectedAnswerId, setSelectedAnswerId] = useState(null)
   const { id } = useParams()
 
   const setValues = (scriptResponse) => {
@@ -52,7 +54,7 @@ export default function Script () {
 
   const handleGenerateAllAnswerVariations = async () => {
     setLoading(true)
-    const scriptResponse = await post(`scripts/${id}/generate_aswers_variations`)
+    const scriptResponse = await post(`scripts/${id}/generate_answers_variations`)
     setValues(scriptResponse)
     setLoading(false)
   }
@@ -70,10 +72,6 @@ export default function Script () {
     }
     setLoading(false)
     setValues(scriptResponse)
-  }
-
-  const handleQuestionClick = (questionId) => {
-    setSelectedQuestionId(questionId)
   }
 
   return (
@@ -178,7 +176,7 @@ export default function Script () {
           variant="contained"
           color="warning"
           style={{ margin: 10 }}
-          onClick={handleGenerateAnswer}
+          onClick={handleGenerateAllAnswerVariations}
           disabled={loading}
         >
           {loading
@@ -191,8 +189,14 @@ export default function Script () {
             : 'Generate Answer Variations'}
         </Button>
       </Grid>
-      <ListQuestions questions={script?.questions || []} handleQuestionClick={handleQuestionClick} fetchScript={fetchScript} />
+      <ListQuestions
+        questions={script?.questions || []}
+        handleAnswerClick={setSelectedAnswerId}
+        handleQuestionClick={setSelectedQuestionId}
+        fetchScript={fetchScript}
+      />
       <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)} />
+      <ShowAnswer answerId={selectedAnswerId} open={!!selectedAnswerId} handleClose={() => setSelectedAnswerId(null)} />
     </Grid>
   )
 }

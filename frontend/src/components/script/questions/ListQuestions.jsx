@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types'
 import { patch, post, remove } from '../../../api/apis'
 
-export default function ListQuestions ({ questions, handleQuestionClick, fetchScript }) {
+export default function ListQuestions ({ questions, handleQuestionClick, handleAnswerClick, fetchScript }) {
   const [questionsState, setQuestionsState] = useState([])
   const [changingAnswers, setChangingAnswers] = useState([])
   const [loadingQuestions, setLoadingQuestions] = useState([])
@@ -100,7 +100,16 @@ export default function ListQuestions ({ questions, handleQuestionClick, fetchSc
                 {renderAnswer(question)}
               </TableCell>
               <TableCell>
-                <Button variant="contained" color="warning" size="small" style={{ margin: 5, fontSize: 8 }} disabled={loadingQuestions.includes(question.id)}>See Variations</Button>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  size="small"
+                  style={{ margin: 5, fontSize: 8 }}
+                  disabled={loadingQuestions.includes(question.id)}
+                  onClick={() => handleAnswerClick(question.answer?.id)}
+                >
+                  See Variations
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -112,6 +121,7 @@ export default function ListQuestions ({ questions, handleQuestionClick, fetchSc
 
 ListQuestions.propTypes = {
   questions: PropTypes.array.isRequired,
+  handleAnswerClick: PropTypes.func.isRequired,
   handleQuestionClick: PropTypes.func.isRequired,
   fetchScript: PropTypes.func.isRequired
 }

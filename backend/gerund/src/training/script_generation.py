@@ -1,5 +1,6 @@
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from django.db import connection
 
 from gerund.models import Answer, Question, IncomingEmbedding, OutgoingMessage
 from gerund.src.ai import apis as ai_apis
@@ -93,7 +94,85 @@ def generate_question_variations(question, number_of_variations=100):
         )
         incoming_embedding.save()
 
+    connection.close()
+
     return f"Generated {len(variations)} variations for question {question.id}"
+
+
+def generate_script_answers_variations(script, number_of_variations=10, partial=True):
+    """
+    Generate answers variations for a script in batches and concurrently
+    This is used just to provide some randomness to the answers.
+    """
+
+    if not partial:
+        OutgoingMessage.objects.prefetch_related("answer__question").filter(
+            answer__question__script=script
+        ).delete()
+
+    answers = Answer.objects.prefetch_related("question").filter(
+        question__script=script
+    )
+    print("Started generating answers variations")
+    _generate_answers_variations_in_batch(answers, number_of_variations)
+
+
+def _generate_answers_variations_in_batch(answers, number_of_variations, batch_size=7):
+    """
+    Generate answers variations in batches.
+
+    - The batch size defaults to 7 due to rate limiting on OpenAI API for GPT-4.
+    - Each completion is using ~1250 tokens, so we can only do 7 completions per minute.
+    - Each completion takes more than one minute to complete, so we can afford the 7 requests.
+
+    """
+
+    for i in range(0, len(answers), batch_size):
+        _concurrent_generate_answers_variations(
+            answers[i : i + batch_size], number_of_variations
+        )
+
+
+def _concurrent_generate_answers_variations(answers, number_of_variations):
+    """Generate answers variations concurrently using Threads."""
+
+    futures = []
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for answer in answers:
+            futures.append(
+                executor.submit(
+                    generate_answer_variations, answer, number_of_variations
+                )
+            )
+    for future in as_completed(futures):
+        try:
+            print(future.result())
+        except Exception as exc:
+            print(exc)
+
+
+def generate_answer_variations(answer, number_of_variations=100):
+    """Generate variations to an answer."""
+    print(f"Generating variations for answer {answer.id}")
+
+    prompt = _build_answer_variations_prompt(answer, number_of_variations)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    variations = response.split("--- ")[1:]
+    for variation in variations:
+        outgoing_message = OutgoingMessage(
+            content=variation.strip(), answer=answer, type="answer"
+        )
+        outgoing_message.save()
+
+    # save the original answer as well
+    outgoing_message = OutgoingMessage(
+        content=answer.content, answer=answer, type="answer"
+    )
+    outgoing_message.save()
+
+    connection.close()
+
+    return f"Generated {len(variations)} variations for answer {answer.id}"
 
 
 def generate_potential_answers(script, partial=True):
@@ -255,7 +334,7 @@ def _build_question_variations_prompt(question, number_of_variations):
         You are an expert in coloquial spoken language and customer service and know how users usually ask questions.
         That question would have come from a customer in spoken language, so it is important to cover the many ways people can ask the same question.
         Please always follow the following instructions to generate the variations:
-        - generate {number_of_variations} variations of the question presented at the end of this prompt in.
+        - generate {number_of_variations} variations of the question presented at the end of this prompt in 'Question'.
         - for some context, see 'Context' and 'New Product' below.
         - Always use the same languange used in the question.
         - Try to generate variations that are as different as possible among themselves.
@@ -276,5 +355,25 @@ def _build_question_variations_prompt(question, number_of_variations):
 
         Question:
         {question.content}
+        """
+    return [{"role": "system", "content": prompt}]
+
+
+def _build_answer_variations_prompt(answer, number_of_variations):
+    """Builds the prompt for generating variations to an answer so that we can store in vector DB."""
+    prompt = f"""
+        You are an expert in over-the-phone sales and can answer questions truthly but convincingly, in order to sell a product.
+        The original question would have come from a customer in spoken language, so it is important that the answers are also in spoken language.
+        Please always follow the following instructions to generate the variations:
+        - generate {number_of_variations} variations of the answer presented at the end of this prompt in 'Answer'.
+        - Always use the same languange used in the original answer.
+        - Try to generate variations that are as different as possible among themselves.
+        - The variations must be a representation of how people chat in real life over a phone call.
+        - Present the answers in a unordered/unnumbered list using --- as a separator.
+            --- variation
+            --- variation
+
+        Answer:
+        {answer.content}
         """
     return [{"role": "system", "content": prompt}]

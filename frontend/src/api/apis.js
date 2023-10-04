@@ -1,101 +1,101 @@
-import {snakeCase} from 'lodash';
+import { snakeCase } from 'lodash'
 
-const BASE_ENDPOINT = 'http://localhost:8000/api/';
+const BASE_ENDPOINT = 'http://localhost:8000/api/'
 
-export async function get(path) {
+export async function get (path) {
   return fetch(
     `${BASE_ENDPOINT + path}`,
     {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    },
+      headers: { 'Content-Type': 'application/json' }
+    }
   )
     .then((response) => {
       if (!response.ok) {
-        throw response;
+        throw response
       }
-      return response.json();
+      return response.json()
     })
     .then((data) => data)
 }
 
-export async function post(path, data={}) {
+export async function post (path, data = {}) {
   const body = normalizeData(data)
   const response = await fetch(
     `${BASE_ENDPOINT + path}/`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: body,
-    },
+      body
+    }
   )
     .then((response) => {
       if (!response.ok) {
-        throw response;
+        throw response
       }
       if (response.status === 204) {
-        return {};
+        return {}
       }
-      return response.json();
+      return response.json()
     })
     .then((data) => data)
     .catch((error) => {
-      return {error: {status: error.status, message: error.statusText}}
+      return { error: { status: error.status, message: error.statusText } }
     })
 
-  return response;
+  return response
 }
 
-export async function patch(path, id, data) {
-  const body = normalizeData(data);
+export async function patch (path, id, data) {
+  const body = normalizeData(data)
 
   const response = await fetch(
     `${BASE_ENDPOINT + path}/${id}/`,
     {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: body,
-    },
+      body
+    }
   )
     .then((response) => {
       if (!response.ok) {
-        throw response;
+        throw response
       }
-      return response.json();
+      return response.json()
     })
     .then((data) => data)
     .catch((error) => {
-      return {error: {status: error.status, message: error.statusText}}
+      return { error: { status: error.status, message: error.statusText } }
     })
 
-  return response;
+  return response
 }
 
-export async function remove(path, id) {
+export async function remove (path, id) {
   const response = await fetch(
     `${BASE_ENDPOINT + path}/${id}/`,
     {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-    },
+      headers: { 'Content-Type': 'application/json' }
+    }
   )
     .then((response) => {
       if (!response.ok) {
-        throw response;
+        throw response
       }
-      return response.json();
+      return response.json()
     })
     .then((data) => {
       return data
     })
     .catch((error) => {
-      return {error: {status: error.status, message: error.statusText}}
+      return { error: { status: error.status, message: error.statusText } }
     })
 
-  return response;
+  return response
 }
 
-function normalizeData(data) {
+function normalizeData (data) {
   const snakeData =
     Object.entries(data)
       .reduce((acc, [key, val]) => {
