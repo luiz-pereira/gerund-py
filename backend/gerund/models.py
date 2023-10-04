@@ -30,7 +30,9 @@ class Question(models.Model):
 class OutgoingMessage(models.Model):
     content = models.TextField()
     type = models.CharField(max_length=36)
-    answer = models.ForeignKey("Answer", on_delete=models.CASCADE, null=True)
+    answer = models.ForeignKey(
+        "Answer", related_name="outgoing_messages", on_delete=models.CASCADE, null=True
+    )
     speech_binary = models.BinaryField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -10,9 +10,11 @@ class OutgoingMessageSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    outgoing_messages = OutgoingMessageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Answer
-        fields = ("id", "content", "question")
+        fields = ("id", "content", "question", "outgoing_messages")
 
 
 class IncomingEmbeddingSerializer(serializers.ModelSerializer):

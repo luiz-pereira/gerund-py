@@ -43,8 +43,8 @@ class QuestionView(viewsets.ModelViewSet):
             question.refresh_from_db()
             serializer = QuestionSerializer(question)
             return Response(serializer.data)
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print(error)
             return Response(status=HTTP_400_BAD_REQUEST)
 
 
@@ -72,8 +72,8 @@ class ScriptView(viewsets.ModelViewSet):
             script.refresh_from_db()
             serializer = ScriptSerializer(script)
             return Response(serializer.data)
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print(error)
             return Response(status=HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"])
@@ -82,8 +82,8 @@ class ScriptView(viewsets.ModelViewSet):
         try:
             script_generation.generate_script_questions_variations(script)
             return Response(status=HTTP_200_OK)
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print(error)
             return Response(status=HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"])
@@ -94,6 +94,16 @@ class ScriptView(viewsets.ModelViewSet):
             script.refresh_from_db()
             serializer = ScriptSerializer(script)
             return Response(serializer.data)
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post"])
+    def generate_answers_variations(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_script_answers_variations(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
             return Response(status=HTTP_400_BAD_REQUEST)
