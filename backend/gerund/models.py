@@ -8,6 +8,9 @@ class Answer(models.Model):
     question = models.OneToOneField("Question", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    script = models.ForeignKey(
+        "Script", on_delete=models.CASCADE, related_name="answers"
+    )
 
     def _str_(self):
         return self.ids
@@ -33,6 +36,9 @@ class OutgoingMessage(models.Model):
     answer = models.ForeignKey(
         "Answer", related_name="outgoing_messages", on_delete=models.CASCADE, null=True
     )
+    script = models.ForeignKey(
+        "Script", on_delete=models.CASCADE, related_name="outgoing_messages"
+    )
     speech_binary = models.BinaryField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -49,6 +55,9 @@ class IncomingEmbedding(models.Model):
         on_delete=models.CASCADE,
         related_name="incoming_embeddings",
         null=True,
+    )
+    script = models.ForeignKey(
+        "Script", on_delete=models.CASCADE, related_name="incoming_embeddings"
     )
     embedding = VectorField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
