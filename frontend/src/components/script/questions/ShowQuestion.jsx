@@ -29,9 +29,8 @@ export default function ShowQuestion ({ questionId, open, handleClose }) {
         {question.id}
       </DialogTitle>
       <Button variant="outlined" onClick={handleGenerateVariations}>Generate Variations</Button>
-      <DialogContent>
-        <Typography variant="h6">Question</Typography>
-        <Typography>{question.content}</Typography>
+      <DialogContent style={{ margin: 12, height: 'auto', overflowY: 'hidden' }}>
+        <Typography variant="h6">Question: {question.content}</Typography>
       </DialogContent>
       <TableContainer>
         <Table sx={{ width: 'fit-content' }} aria-label="simple table">
