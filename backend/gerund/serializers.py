@@ -17,6 +17,12 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ("id", "content", "question", "outgoing_messages", "script")
 
 
+class AnswerSerializerLite(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ("id", "content")
+
+
 class IncomingEmbeddingSerializer(serializers.ModelSerializer):
     class Meta:
         model = IncomingEmbedding
@@ -24,14 +30,23 @@ class IncomingEmbeddingSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+    answer = AnswerSerializer(read_only=True)
+    incoming_embeddings = IncomingEmbeddingSerializer(many=True, read_only=True)
+
     class Meta:
         model = Question
         fields = ("id", "content", "answer", "answerable", "incoming_embeddings")
 
 
-class ScriptSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True, read_only=True)
+class QuestionSerializerLite(serializers.ModelSerializer):
+    answer = AnswerSerializerLite(read_only=True)
 
+    class Meta:
+        model = Question
+        fields = ("id", "content", "answer", "answerable")
+
+
+class ScriptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Script
         fields = (

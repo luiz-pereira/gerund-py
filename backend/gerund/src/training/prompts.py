@@ -1,5 +1,6 @@
 """This module contains the functions that build the prompts for the script generation."""
 
+
 def build_questions_prompt(script, number_of_questions):
     """Builds the prompt for the chatbot."""
     if number_of_questions > 100:
@@ -33,10 +34,11 @@ def build_questions_prompt(script, number_of_questions):
         {script.new_product}
         {custom_prompt}
         """
-    return [{"role": "system", "content": script generation}]
+    return [{"role": "system", "content": prompt}]
 
 
 ""
+
 
 def build_answers_prompt(script, questions):
     """Builds the prompt for the chatbot."""
@@ -73,10 +75,11 @@ def build_answers_prompt(script, questions):
         Questions:
         {questions_prompt}
         """
-    return [{"role": "system", "content": script generation}]
+    return [{"role": "system", "content": prompt}]
 
 
 ""
+
 
 def build_question_variations_prompt(question, number_of_variations):
     """Builds the prompt for generating variations to a question so that we can store in vector DB."""
@@ -106,10 +109,11 @@ def build_question_variations_prompt(question, number_of_variations):
         Question:
         {question.content}
         """
-    return [{"role": "system", "content": script generation}]
+    return [{"role": "system", "content": prompt}]
 
 
 ""
+
 
 def build_answer_variations_prompt(answer, number_of_variations):
     """Builds the prompt for generating variations to an answer so that we can store in vector DB."""
@@ -128,10 +132,11 @@ def build_answer_variations_prompt(answer, number_of_variations):
         Answer:
         {answer.content}
         """
-    return [{"role": "system", "content": script generation}]
+    return [{"role": "system", "content": prompt}]
 
 
 ""
+
 
 def build_initial_pitches_prompt(script, number_of_pitches=10):
     """Builds the prompt for generating initial pitches for a customer call."""
@@ -161,6 +166,7 @@ def build_initial_pitches_prompt(script, number_of_pitches=10):
         """
     return [{"role": "system", "content": prompt}]
 
+
 def build_intermediate_pitches_prompt(script, number_of_pitches=20):
     """Builds the prompt for generating intermediate pitches for a customer call."""
     prompt = f"""
@@ -188,6 +194,7 @@ def build_intermediate_pitches_prompt(script, number_of_pitches=20):
         """
     return [{"role": "system", "content": prompt}]
 
+
 def build_fail_endings_prompt(script, number_of_endings=10):
     """Builds the prompt for generating fail endings for a customer call."""
     prompt = f"""
@@ -214,6 +221,7 @@ def build_fail_endings_prompt(script, number_of_endings=10):
         {script.new_product}
         """
     return [{"role": "system", "content": prompt}]
+
 
 def build_success_endings_prompt(script, number_of_endings=10):
     """Builds the prompt for generating success endings for a customer call."""
@@ -243,6 +251,7 @@ def build_success_endings_prompt(script, number_of_endings=10):
         """
     return [{"role": "system", "content": prompt}]
 
+
 def build_stallings_prompt(script, number_of_stallings=50):
     """Builds the prompt for generating stallings for a customer call."""
     prompt = f"""
@@ -268,6 +277,3 @@ def build_stallings_prompt(script, number_of_stallings=50):
         {script.new_product}
         """
     return [{"role": "system", "content": prompt}]
-
-
-def build_total_fail_triggers_prompt(script):

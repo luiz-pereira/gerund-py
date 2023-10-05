@@ -13,13 +13,13 @@ export default function Script () {
   const [presentation, setPresentation] = useState('')
   const [newProduct, setNewProduct] = useState('')
   const [loading, setLoading] = useState(false)
-  const [script, setScript] = useState(null)
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
   const [selectedAnswerId, setSelectedAnswerId] = useState(null)
+  const [questions, setQuestions] = useState([])
+
   const { id } = useParams()
 
   const setValues = (scriptResponse) => {
-    setScript(scriptResponse)
     setName(scriptResponse.name)
     setCustomPrompt(scriptResponse.custom_prompt)
     setPresentation(scriptResponse.presentation)
@@ -29,6 +29,11 @@ export default function Script () {
   const fetchScript = async () => {
     const scriptResponse = await get(`scripts/${id}`)
     setValues(scriptResponse)
+  }
+
+  const fetchQuestions = async () => {
+    const questionsResponse = await get(`scripts/${id}/questions`)
+    setQuestions(questionsResponse)
   }
 
   const handleGenerateQuestion = async () => {
@@ -61,6 +66,7 @@ export default function Script () {
 
   useEffect(() => {
     fetchScript()
+    fetchQuestions()
   }, [])
 
   const handleSaveChanges = async () => {
@@ -190,7 +196,7 @@ export default function Script () {
         </Button>
       </Grid>
       <ListQuestions
-        questions={script?.questions || []}
+        questions={questions}
         handleAnswerClick={setSelectedAnswerId}
         handleQuestionClick={setSelectedQuestionId}
         fetchScript={fetchScript}

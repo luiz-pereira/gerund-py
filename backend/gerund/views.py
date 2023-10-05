@@ -8,6 +8,7 @@ from .serializers import (
     AnswerSerializer,
     IncomingEmbeddingSerializer,
     QuestionSerializer,
+    QuestionSerializerLite,
     ScriptSerializer,
 )
 from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
@@ -50,11 +51,7 @@ class QuestionView(viewsets.ModelViewSet):
 
 class ScriptView(viewsets.ModelViewSet):
     serializer_class = ScriptSerializer
-
-    def get_queryset(self):
-        return Script.objects.prefetch_related(
-            "questions__incoming_embeddings", "questions__answer"
-        ).all()
+    queryset = Script.objects.all()
 
     def partial_update(self, request, pk=None):
         script = Script.objects.get(pk=pk)
@@ -62,6 +59,12 @@ class ScriptView(viewsets.ModelViewSet):
         if not serializer.is_valid():
             return Response(status=HTTP_400_BAD_REQUEST)
         serializer.save()
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["get"])
+    def questions(self, request, pk=None):
+        questions = Question.objects.prefetch_related("answer").filter(script=pk)
+        serializer = QuestionSerializerLite(questions.all(), many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=["post"])
