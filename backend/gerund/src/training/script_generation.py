@@ -5,14 +5,27 @@ from django.db import connection
 from gerund.models import Answer, Question, IncomingEmbedding, OutgoingMessage
 from gerund.src.ai import apis as ai_apis
 from gerund.src.ai.apis import Models
+from gerund.src.training import prompts
 
 
 def generate_potential_questions(script, number_of_questions=100):
     """Generate potential questions."""
     script.questions.all().delete()
     _identify_language(script)
-    prompt = _build_questions_prompt(script, number_of_questions)
+    prompt = prompts.build_questions_prompt(script, number_of_questions)
     _do_generate_questions(prompt, script)
+
+
+def _do_generate_questions(prompt, script):
+    """Generate questions."""
+    # get the questions
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    # split the response into a list of questions
+    questions = response.split("--- ")[1:]
+    # then loop through them and save them
+    for question in questions:
+        question = Question(content=question.strip(), script=script)
+        question.save()
 
 
 def _identify_language(script):
@@ -37,7 +50,7 @@ def generate_script_questions_variations(
 ):
     """Generate questions variations for a script in batches and concurrently"""
     if not partial:
-        IncomingEmbedding.objects.filter(question__script=script).delete()
+        IncomingEmbedding.objects.filter(script=script).delete()
 
     questions = script.questions.filter(incoming_embeddings__isnull=True)
     print("Started generating questions variations")
@@ -85,12 +98,15 @@ def generate_question_variations(question, number_of_variations=100):
     """Generate variations to a question."""
     print(f"Generating variations for question {question.id}")
 
-    prompt = _build_question_variations_prompt(question, number_of_variations)
+    prompt = prompts.build_question_variations_prompt(question, number_of_variations)
     response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
     variations = response.split("--- ")[1:]
     for variation in variations:
         incoming_embedding = IncomingEmbedding(
-            content=variation.strip(), question=question, type="question"
+            content=variation.strip(),
+            question=question,
+            script=question.script,
+            type="question",
         )
         incoming_embedding.save()
 
@@ -106,13 +122,9 @@ def generate_script_answers_variations(script, number_of_variations=10, partial=
     """
 
     if not partial:
-        OutgoingMessage.objects.prefetch_related("answer__question").filter(
-            answer__question__script=script
-        ).delete()
+        OutgoingMessage.objects.filter(script=script).delete()
 
-    answers = Answer.objects.prefetch_related("question").filter(
-        question__script=script
-    )
+    answers = Answer.objects.filter(script=script)
     print("Started generating answers variations")
     _generate_answers_variations_in_batch(answers, number_of_variations)
 
@@ -155,18 +167,21 @@ def generate_answer_variations(answer, number_of_variations=100):
     """Generate variations to an answer."""
     print(f"Generating variations for answer {answer.id}")
 
-    prompt = _build_answer_variations_prompt(answer, number_of_variations)
+    prompt = prompts.build_answer_variations_prompt(answer, number_of_variations)
     response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
     variations = response.split("--- ")[1:]
     for variation in variations:
         outgoing_message = OutgoingMessage(
-            content=variation.strip(), answer=answer, type="answer"
+            content=variation.strip(),
+            answer=answer,
+            script=answer.script,
+            type="answer",
         )
         outgoing_message.save()
 
     # save the original answer as well
     outgoing_message = OutgoingMessage(
-        content=answer.content, answer=answer, type="answer"
+        content=answer.content, answer=answer, script=answer.script, type="answer"
     )
     outgoing_message.save()
 
@@ -181,20 +196,8 @@ def generate_potential_answers(script, partial=True):
         questions = script.questions.select_related("answer").filter(answered=False)
     else:
         questions = script.questions.all()
-    prompt = _build_answers_prompt(script, questions)
+    prompt = prompts.build_answers_prompt(script, questions)
     _do_generate_answers(prompt, questions)
-
-
-def _do_generate_questions(prompt, script):
-    """Generate questions."""
-    # get the questions
-    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
-    # split the response into a list of questions
-    questions = response.split("--- ")[1:]
-    # then loop through them and save them
-    for question in questions:
-        question = Question(content=question.strip(), script=script)
-        question.save()
 
 
 def _do_generate_answers(prompt, questions):
@@ -224,12 +227,88 @@ def _do_generate_answers(prompt, questions):
         else:
             answerable = True
 
-        answer = Answer(content=answer_content.strip(), question_id=question_id)
         question = questions.get(id=question_id)
         question.answerable = answerable
         question.answered = True
         question.save()
+        answer = Answer(
+            content=answer_content.strip(),
+            question_id=question_id,
+            script=question.script,
+        )
         answer.save()
+
+
+def generate_initial_pitches(script):
+    """Generate initial pitches for customer call."""
+    prompt = prompts.build_initial_pitches_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    pitches = response.split("--- ")[1:]
+    for pitch in pitches:
+        pitch = OutgoingMessage(
+            content=pitch.strip(), script=script, type="initial_pitch"
+        )
+        pitch.save()
+
+
+def generate_intermediate_pitches(script):
+    """Generate intermediate pitches for customer call."""
+    prompt = prompts.build_intermediate_pitches_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    pitches = response.split("--- ")[1:]
+    for pitch in pitches:
+        pitch = OutgoingMessage(
+            content=pitch.strip(), script=script, type="intermediate_pitch"
+        )
+        pitch.save()
+
+
+def generate_fail_endings(script):
+    """Generate fail endings for customer call."""
+    prompt = prompts.build_fail_endings_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    endings = response.split("--- ")[1:]
+    for ending in endings:
+        ending = OutgoingMessage(
+            content=ending.strip(), script=script, type="fail_ending"
+        )
+        ending.save()
+
+
+def generate_success_endings(script):
+    """Generate success endings for customer call."""
+    prompt = prompts.build_success_endings_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    endings = response.split("--- ")[1:]
+    for ending in endings:
+        ending = OutgoingMessage(
+            content=ending.strip(), script=script, type="success_ending"
+        )
+        ending.save()
+
+
+def generate_total_fail_triggers(script):
+    """Generate total fail triggers for customer call."""
+    prompt = prompts.build_total_fail_triggers_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    triggers = response.split("--- ")[1:]
+    for trigger in triggers:
+        trigger = IncomingEmbedding(
+            content=trigger.strip(), script=script, type="total_fail_trigger"
+        )
+        trigger.save()
+
+
+def generate_stallings(script):
+    """Generate stallings for customer call."""
+    prompt = prompts.build_stallings_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    stallings = response.split("--- ")[1:]
+    for stalling in stallings:
+        stalling = OutgoingMessage(
+            content=stalling.strip(), script=script, type="stalling"
+        )
+        stalling.save()
 
 
 def fill_incomming_embeddings():
@@ -252,128 +331,3 @@ def fill_speech_binaries():
     for outgoing in filtered_outgoing:
         outgoing.speech_binary = ai_apis.produce_speech_binary(outgoing.content)
         outgoing.save()
-
-
-def _build_questions_prompt(script, number_of_questions):
-    """Builds the prompt for the chatbot."""
-    if number_of_questions > 100:
-        raise Exception("Too many questions")
-
-    if script.custom_prompt == "" or script.custom_prompt is None:
-        custom_prompt = ""
-    else:
-        custom_prompt = f"\nOther details:\n{script.custom_prompt}\n"
-
-    prompt = f"""
-        You are an expert in sales and understand what customers may want to know about a new product or service.
-        I am building a script for cold calling customers to sell a new product, so I need potential questions that customers may ask.
-        I need you to come up with at {number_of_questions} questions that customers may ask about the new product.
-        Please follow the instructions below to generate the questions.
-        - Most questions must make sense in the context of the company and/or the product.
-        - Also include some questions that do not make complete sense, but are still related to the company or the product.
-        - Also include some questions that are not completely related to the company or the product.
-        - Also include some questions that are not related to the company or the product, and do not make much sense under the context.
-        - Each question must be unique, in terms of meaning.
-        - The questions are short, and can be answered with a short answer.
-        - Use the languange that is used after "Company Presentation:"
-        - Present the questions in a unordered/unnumbered list , without a line break using --- as a separator like this:
-            --- question --- question --- question
-
-        Context:
-        Company Presentation:
-        {script.presentation}
-
-        New Product:
-        {script.new_product}
-        {custom_prompt}
-        """
-    return [{"role": "system", "content": prompt}]
-
-
-def _build_answers_prompt(script, questions):
-    """Builds the prompt for the chatbot."""
-
-    questions_prompt = ""
-    for question in questions:
-        questions_prompt += f"{question.id}. {question.content} \n"
-
-    prompt = f"""
-        You are an expert in sales and understand what customers may want to know about a new product or service.
-        I am building a script for cold calling customers to sell a new product, so I need potential answers to the questions that customers may ask.
-        I need you to look at the questions below and also at established common sense to answer each of them.
-        Please follow the instructions below to generate the answers.
-        - Be polite, charming and convincing. You are trying to sell a product.
-        - Each answer must be answereable using the context provided unless it is very obvious to an average adult person.
-        - The answers must be short and direct.
-        - Always reply using the same languange used in the question.
-        - Present the answers in a unordered/unnumbered list using --- as a separator and prepended by the question id, like this:
-            --- [123] answer
-            --- [124] answer
-            --- [125] answer
-        - if the questions is potentially valid and within the service main context, but not answerable with the context provided, answer with (***) like this:
-            --- [123] (***)
-        - if the questions are way out of context, prefix the answer answer with (###) and then politely declining to answer, like this:
-            --- [123] (###) Unfortunately, I have no information about this.
-
-        Context:
-        Company Presentation:
-        {script.presentation}
-
-        New Product:
-        {script.new_product}
-
-        Questions:
-        {questions_prompt}
-        """
-    return [{"role": "system", "content": prompt}]
-
-
-def _build_question_variations_prompt(question, number_of_variations):
-    """Builds the prompt for generating variations to a question so that we can store in vector DB."""
-    prompt = f"""
-        You are an expert in coloquial spoken language and customer service and know how users usually ask questions.
-        That question would have come from a customer in spoken language, so it is important to cover the many ways people can ask the same question.
-        Please always follow the following instructions to generate the variations:
-        - generate {number_of_variations} variations of the question presented at the end of this prompt in 'Question'.
-        - for some context, see 'Context' and 'New Product' below.
-        - Always use the same languange used in the question.
-        - Try to generate variations that are as different as possible among themselves.
-        - Do not censor bad words.
-        - The variations must be a representation of how people chat in real life over a phone call.
-        - Include regionalisms in some variations.
-        - Ensure that you cover different personas, under different levels of patience and politeness.
-        - Present the answers in a unordered/unnumbered list using --- as a separator.
-            --- variation
-            --- variation
-
-        Context:
-        Company Presentation:
-        {question.script.presentation}
-
-        New Product:
-        {question.script.new_product}
-
-        Question:
-        {question.content}
-        """
-    return [{"role": "system", "content": prompt}]
-
-
-def _build_answer_variations_prompt(answer, number_of_variations):
-    """Builds the prompt for generating variations to an answer so that we can store in vector DB."""
-    prompt = f"""
-        You are an expert in over-the-phone sales and can answer questions truthly but convincingly, in order to sell a product.
-        The original question would have come from a customer in spoken language, so it is important that the answers are also in spoken language.
-        Please always follow the following instructions to generate the variations:
-        - generate {number_of_variations} variations of the answer presented at the end of this prompt in 'Answer'.
-        - Always use the same languange used in the original answer.
-        - Try to generate variations that are as different as possible among themselves.
-        - The variations must be a representation of how people chat in real life over a phone call.
-        - Present the answers in a unordered/unnumbered list using --- as a separator.
-            --- variation
-            --- variation
-
-        Answer:
-        {answer.content}
-        """
-    return [{"role": "system", "content": prompt}]

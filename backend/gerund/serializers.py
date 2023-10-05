@@ -6,7 +6,7 @@ from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
 class OutgoingMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutgoingMessage
-        fields = ("id", "content", "type", "speech_binary")
+        fields = ("id", "content", "type", "speech_binary", "script")
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -14,19 +14,16 @@ class AnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ("id", "content", "question", "outgoing_messages")
+        fields = ("id", "content", "question", "outgoing_messages", "script")
 
 
 class IncomingEmbeddingSerializer(serializers.ModelSerializer):
     class Meta:
         model = IncomingEmbedding
-        fields = ("id", "content", "type", "embedding")
+        fields = ("id", "content", "type", "embedding", "script", "question")
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    incoming_embeddings = IncomingEmbeddingSerializer(many=True, read_only=True)
-    answer = AnswerSerializer(read_only=True)
-
     class Meta:
         model = Question
         fields = ("id", "content", "answer", "answerable", "incoming_embeddings")
@@ -44,7 +41,6 @@ class ScriptSerializer(serializers.ModelSerializer):
             "custom_prompt",
             "presentation",
             "new_product",
-            "questions",
         )
         name = serializers.CharField(
             validators=[UniqueValidator(queryset=Script.objects.all())]
