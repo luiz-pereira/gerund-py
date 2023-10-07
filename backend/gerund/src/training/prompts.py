@@ -277,3 +277,94 @@ def build_stallings_prompt(script, number_of_stallings=50):
         {script.new_product}
         """
     return [{"role": "system", "content": prompt}]
+
+
+def build_total_fail_triggers_prompt(script, number_of_triggers=100):
+    """Builds the prompt for generating total fail triggers for a customer call."""
+    prompt = f"""
+        Pretend you are a customer that's receiving a cold call about a new product.
+        The salesperson is trying to sell you the product, but you are definetely not interested.
+        I want you to generate some customer speeches(called triggers from now on) that would clearly indicate that you are not interested in the product and you want the call to end.
+        Please always follow the following instructions to generate the triggers:
+        - generate {number_of_triggers} total fail triggers for the customer call.
+        - Always use the same languange used in the provided context.
+        - Try to generate triggers that are as different as possible among themselves.
+        - To generate the triggers, think about what you would say if you were the customer and wanted to end the call.
+        - The triggers must be a representation of how people chat in real life over a phone call.
+        - The triggers can unfortunately include bad words.
+        - The triggers can include regionalisms and slangs.
+        - The triggers can be rude and even very rude, do not censor yourself.
+        - The triggers should be short enough to be said in less than 10 seconds.
+        - Present the triggers in a unordered/unnumbered list using --- as a separator.
+            --- trigger
+            --- trigger
+        - To create the triggers, use the company presentation and the new product below as context.
+
+        Context:
+        Company Presentation:
+        {script.presentation}
+
+        New Product:
+        {script.new_product}
+        """
+    return [{"role": "system", "content": prompt}]
+
+
+def build_partial_fail_triggers_prompt(script, number_of_triggers=100):
+    """Builds the prompt for generating partial fail triggers for a customer call."""
+    prompt = f"""
+        Pretend you are a customer that's receiving a cold call about a new product.
+        The salesperson is trying to sell you the product, but you are not very interested.
+        I want you to generate some customer speeches(called triggers from now on) that would indicate that you are not interested in the product, but you might still be convinced.
+        Please always follow the following instructions to generate the triggers:
+        - generate {number_of_triggers} partial fail triggers for the customer call.
+        - Always use the same languange used in the provided context.
+        - Try to generate triggers that are as different as possible among themselves.
+        - To generate the triggers, think about what you would say if you were the customer and wanted to end the call, but not necessarily immediately.
+        - The triggers must be a representation of how people chat in real life over a phone call.
+        - The triggers can unfortunately include bad words.
+        - The triggers can include regionalisms and slangs.
+        - The triggers can be rude and even very rude, do not censor yourself.
+        - The triggers should be short enough to be said in less than 10 seconds.
+        - Present the triggers in a unordered/unnumbered list using --- as a separator.
+            --- trigger
+            --- trigger
+        - To create the triggers, use the company presentation and the new product below as context.
+
+        Context:
+        Company Presentation:
+        {script.presentation}
+
+        New Product:
+        {script.new_product}
+        """
+    return [{"role": "system", "content": prompt}]
+
+
+def build_success_triggers_prompt(script, number_of_triggers=100):
+    """Builds the prompt for generating success triggers for a customer call."""
+    prompt = f"""
+        Pretend you are a customer that's receiving a cold call about a new product.
+        The salesperson is trying to sell you the product, and you are interested in the product.
+        I want you to generate some customer speeches(called triggers from now on) that would indicate that you are interested in the product and want to buy it.
+        Please always follow the following instructions to generate the triggers:
+        - generate {number_of_triggers} success triggers for the customer call.
+        - Always use the same languange used in the provided context.
+        - Try to generate triggers that are as different as possible among themselves.
+        - To generate the triggers, think about what you would say if you were the customer and wanted to buy the product.
+        - The triggers must be a representation of how people chat in real life over a phone call.
+        - The triggers can include regionalisms and slangs.
+        - The triggers should be short enough to be said in less than 10 seconds.
+        - Present the triggers in a unordered/unnumbered list using --- as a separator.
+            --- trigger
+            --- trigger
+        - To create the triggers, use the company presentation and the new product below as context.
+
+        Context:
+        Company Presentation:
+        {script.presentation}
+
+        New Product:
+        {script.new_product}
+        """
+    return [{"role": "system", "content": prompt}]
