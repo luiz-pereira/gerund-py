@@ -299,6 +299,30 @@ def generate_total_fail_triggers(script):
         trigger.save()
 
 
+def generate_partial_fail_triggers(script):
+    """Generate partial fail triggers for customer call."""
+    prompt = prompts.build_partial_fail_triggers_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    triggers = response.split("--- ")[1:]
+    for trigger in triggers:
+        trigger = IncomingEmbedding(
+            content=trigger.strip(), script=script, type="partial_fail_trigger"
+        )
+        trigger.save()
+
+
+def generate_success_triggers(script):
+    """Generate success triggers for customer call."""
+    prompt = prompts.build_success_triggers_prompt(script)
+    response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
+    triggers = response.split("--- ")[1:]
+    for trigger in triggers:
+        trigger = IncomingEmbedding(
+            content=trigger.strip(), script=script, type="success_trigger"
+        )
+        trigger.save()
+
+
 def generate_stallings(script):
     """Generate stallings for customer call."""
     prompt = prompts.build_stallings_prompt(script)
