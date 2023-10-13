@@ -14,8 +14,6 @@ from .serializers import (
 from .models import Answer, Question, OutgoingMessage, IncomingEmbedding, Script
 from gerund.src.training import script_generation
 
-# Create your views here.
-
 
 class OutgoingVariationView(viewsets.ModelViewSet):
     serializer_class = OutgoingMessageSerializer
@@ -106,6 +104,24 @@ class ScriptView(viewsets.ModelViewSet):
         script = self.get_object()
         try:
             script_generation.generate_script_answers_variations(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def success_triggers(self, request, pk=None):
+        success_triggers = OutgoingMessage.objects.filter(
+            script=pk, type="success_trigger"
+        )
+        serializer = OutgoingMessageSerializer(success_triggers.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_success_triggers(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_success_triggers(script)
             return Response(status=HTTP_200_OK)
         except Exception as error:
             print(error)

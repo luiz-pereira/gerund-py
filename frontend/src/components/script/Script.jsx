@@ -8,6 +8,7 @@ import { get, post, patch } from '../../api/apis'
 import ShowAnswer from './questions/ShowAnswer'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { grey } from '@mui/material/colors'
+import ShowScriptContents from './ShowScriptContents'
 
 export default function Script () {
   const [name, setName] = useState('')
@@ -18,6 +19,7 @@ export default function Script () {
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
   const [selectedAnswerId, setSelectedAnswerId] = useState(null)
   const [questions, setQuestions] = useState([])
+  const [entityName, setEntityName] = useState(null)
 
   const { id } = useParams()
 
@@ -229,7 +231,7 @@ export default function Script () {
                 variant="contained"
                 color="success"
                 style={{ margin: 10 }}
-                onClick={handleGenerateAnswer}
+                onClick={() => setEntityName('success_triggers')}
                 disabled={loading}
               >
                 {loading
@@ -246,7 +248,7 @@ export default function Script () {
                 variant="outlined"
                 color="success"
                 style={{ margin: 10 }}
-                onClick={handleGenerateAllAnswerVariations}
+                onClick={() => setEntityName('success_endings')}
                 disabled={loading}
               >
                 {loading
@@ -266,7 +268,7 @@ export default function Script () {
                 variant="contained"
                 color="warning"
                 style={{ margin: 10 }}
-                onClick={handleGenerateAnswer}
+                onClick={() => setEntityName('partial_fail_triggers')}
                 disabled={loading}
               >
                 {loading
@@ -283,7 +285,7 @@ export default function Script () {
                 variant="outlined"
                 color="warning"
                 style={{ margin: 10 }}
-                onClick={handleGenerateAllAnswerVariations}
+                onClick={() => setEntityName('intermediate_pitches')}
                 disabled={loading}
               >
                 {loading
@@ -303,7 +305,7 @@ export default function Script () {
                 variant="contained"
                 color="error"
                 style={{ margin: 10 }}
-                onClick={handleGenerateAnswer}
+                onClick={() => setEntityName('fail_triggers')}
                 disabled={loading}
               >
                 {loading
@@ -320,7 +322,7 @@ export default function Script () {
                 variant="outlined"
                 color="error"
                 style={{ margin: 10 }}
-                onClick={handleGenerateAllAnswerVariations}
+                onClick={() => setEntityName('fail_endings')}
                 disabled={loading}
               >
                 {loading
@@ -344,6 +346,7 @@ export default function Script () {
       />
       <ShowQuestion questionId={selectedQuestionId} open={!!selectedQuestionId} handleClose={() => setSelectedQuestionId(null)} />
       <ShowAnswer answerId={selectedAnswerId} open={!!selectedAnswerId} handleClose={() => setSelectedAnswerId(null)} />
+      <ShowScriptContents entityName={entityName} scriptId={id} open={!!entityName} handleClose={() => setEntityName(null)} />
     </Container>
   )
 }
