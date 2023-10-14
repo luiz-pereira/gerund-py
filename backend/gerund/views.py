@@ -60,6 +60,24 @@ class ScriptView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=["get"])
+    def initial_pitches(self, request, pk=None):
+        initial_pitches = OutgoingMessage.objects.filter(
+            script=pk, type="initial_pitch"
+        )
+        serializer = OutgoingMessageSerializer(initial_pitches.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_initial_pitches(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_initial_pitches(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
     def questions(self, request, pk=None):
         questions = Question.objects.prefetch_related("answer").filter(script=pk)
         serializer = QuestionSerializerLite(questions.all(), many=True)
@@ -111,10 +129,10 @@ class ScriptView(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def success_triggers(self, request, pk=None):
-        success_triggers = OutgoingMessage.objects.filter(
+        success_triggers = IncomingEmbedding.objects.filter(
             script=pk, type="success_trigger"
         )
-        serializer = OutgoingMessageSerializer(success_triggers.all(), many=True)
+        serializer = IncomingEmbeddingSerializer(success_triggers.all(), many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=["post"])
@@ -122,6 +140,130 @@ class ScriptView(viewsets.ModelViewSet):
         script = self.get_object()
         try:
             script_generation.generate_success_triggers(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def success_endings(self, request, pk=None):
+        success_endings = OutgoingMessage.objects.filter(
+            script=pk, type="success_ending"
+        )
+        serializer = OutgoingMessageSerializer(success_endings.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_success_endings(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_success_endings(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def total_fail_triggers(self, request, pk=None):
+        total_fail_triggers = IncomingEmbedding.objects.filter(
+            script=pk, type="total_fail_trigger"
+        )
+        serializer = IncomingEmbeddingSerializer(total_fail_triggers.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_total_fail_triggers(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_total_fail_triggers(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def fail_endings(self, request, pk=None):
+        fail_endings = OutgoingMessage.objects.filter(script=pk, type="fail_ending")
+        serializer = OutgoingMessageSerializer(fail_endings.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_fail_endings(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_fail_endings(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def partial_fail_triggers(self, request, pk=None):
+        partial_fail_triggers = IncomingEmbedding.objects.filter(
+            script=pk, type="partial_fail_trigger"
+        )
+        serializer = IncomingEmbeddingSerializer(partial_fail_triggers.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_partial_fail_triggers(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_partial_fail_triggers(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def intermediate_pitches(self, request, pk=None):
+        intermediate_pitches = OutgoingMessage.objects.filter(
+            script=pk, type="intermediate_pitch"
+        )
+        serializer = OutgoingMessageSerializer(intermediate_pitches.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_intermediate_pitches(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_intermediate_pitches(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["get"])
+    def stallings(self, request, pk=None):
+        stallings = OutgoingMessage.objects.filter(script=pk, type="stalling")
+        serializer = OutgoingMessageSerializer(stallings.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def generate_stallings(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.generate_stallings(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post"])
+    def fill_embeddings(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.fill_embeddings(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post"])
+    def fill_speeches(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.fill_speeches(script)
             return Response(status=HTTP_200_OK)
         except Exception as error:
             print(error)
