@@ -138,7 +138,7 @@ def build_answer_variations_prompt(answer, number_of_variations):
 ""
 
 
-def build_initial_pitches_prompt(script, number_of_pitches=10):
+def build_initial_pitches_prompt(script, number_of_pitches=20):
     """Builds the prompt for generating initial pitches for a customer call."""
     prompt = f"""
         You are an expert in over-the-phone sales and a master at convincing people to buy a product.

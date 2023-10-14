@@ -84,6 +84,18 @@ export default function Script () {
     setValues(scriptResponse)
   }
 
+  const handleGenerateEmbeddings = async () => {
+    setLoading(true)
+    await post(`scripts/${id}/fill_embeddings`)
+    setLoading(false)
+  }
+
+  const handleGenerateSpeeches = async () => {
+    setLoading(true)
+    await post(`scripts/${id}/fill_speeches`)
+    setLoading(false)
+  }
+
   return (
     <Container maxWidth="100%">
       <Grid2 container direction="row">
@@ -138,7 +150,7 @@ export default function Script () {
               <Button
                 variant="contained"
                 style={{ margin: 10, backgroundColor: grey[500] }}
-                onClick={handleGenerateQuestion}
+                onClick={() => setEntityName('initial_pitches')}
                 disabled={loading}
               >
                 {loading
@@ -305,7 +317,7 @@ export default function Script () {
                 variant="contained"
                 color="error"
                 style={{ margin: 10 }}
-                onClick={() => setEntityName('fail_triggers')}
+                onClick={() => setEntityName('total_fail_triggers')}
                 disabled={loading}
               >
                 {loading
@@ -333,6 +345,62 @@ export default function Script () {
                   </Box>
                     )
                   : 'Fail Endings'}
+              </Button>
+            </Card>
+          </Grid2>
+          <Grid2 item>
+            <Card style={{ margin: 10, padding: 10 }}>
+              <Button
+                variant="contained"
+                style={{ margin: 10, backgroundColor: grey[500] }}
+                onClick={() => setEntityName('stallings')}
+                disabled={loading}
+              >
+                {loading
+                  ? (
+                  <Box>
+                    <CircularProgress size={12} />
+                    Generating...
+                  </Box>
+                    )
+                  : 'Stallings'}
+              </Button>
+            </Card>
+          </Grid2>
+          <Grid2 item>
+            <Card style={{ margin: 10, padding: 10 }}>
+              <Button
+                variant="contained"
+                color="success"
+                style={{ margin: 10 }}
+                onClick={handleGenerateEmbeddings}
+                disabled={loading}
+              >
+                {loading
+                  ? (
+                  <Box>
+                    <CircularProgress size={12} />
+                    Generating...
+                  </Box>
+                    )
+                  : 'Fill Embeddings'}
+              </Button>
+              <KeyboardDoubleArrowRightIcon />
+              <Button
+                variant="outlined"
+                color="success"
+                style={{ margin: 10 }}
+                onClick={handleGenerateSpeeches}
+                disabled={loading}
+              >
+                {loading
+                  ? (
+                  <Box>
+                    <CircularProgress size={12} />
+                    Generating...
+                  </Box>
+                    )
+                  : 'Fill Speeches'}
               </Button>
             </Card>
           </Grid2>

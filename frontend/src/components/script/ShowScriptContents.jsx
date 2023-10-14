@@ -4,13 +4,12 @@ import PropTypes from 'prop-types'
 import { get, post } from '../../api/apis'
 
 export default function ShowScriptContents ({ entityName, scriptId, open, handleClose }) {
-  const [entity, setEntity] = useState([])
+  const [entities, setEntities] = useState([])
   const [loading, setLoading] = useState(false)
 
   const fetchEntities = async () => {
     const response = await get(`scripts/${scriptId}/${entityName}`)
-    debugger
-    setEntity(response)
+    setEntities(response)
   }
 
   useEffect(() => {
@@ -20,20 +19,19 @@ export default function ShowScriptContents ({ entityName, scriptId, open, handle
   }, [scriptId, entityName])
 
   const handleGenerate = async () => {
-    debugger
     setLoading(true)
-    const response = await post(`scripts/${scriptId}/generate_${entityName}`)
-    setEntity(response)
+    await post(`scripts/${scriptId}/generate_${entityName}`)
+    fetchEntities()
     setLoading(false)
   }
 
   return (
-    <Dialog onClose={handleClose} fullWidth open={open}>
+    <Dialog onClose={handleClose} fullWidth open={open} >
       <DialogTitle>
         Script Id: {scriptId}
       </DialogTitle>
-      <Button variant="outlined" disabled={loading} onClick={handleGenerate}>{`Generate ${entityName}`}</Button>
-      <DialogContent>
+      <DialogContent style={{ textAlign: 'center', overflowY: 'unset' }}>
+        <Button variant="outlined" style={{ width: 'fit-content' }} disabled={loading} onClick={handleGenerate}>{`Generate ${entityName}`}</Button>
         <Typography variant="h6">{entityName}</Typography>
       </DialogContent>
       <TableContainer>
@@ -45,14 +43,14 @@ export default function ShowScriptContents ({ entityName, scriptId, open, handle
             </TableRow>
           </TableHead>
           <TableBody>
-            {entity.outgoing_messages?.map((inc) => (
+            {entities.map((entity) => (
               <TableRow
                 hover
-                key={inc.id}
+                key={entity.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell>{inc.id}</TableCell>
-                <TableCell>{inc.content}</TableCell>
+                <TableCell>{entity.id}</TableCell>
+                <TableCell>{entity.content}</TableCell>
               </TableRow>
             ))}
           </TableBody>
