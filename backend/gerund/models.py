@@ -73,7 +73,7 @@ class Script(models.Model):
     presentation = models.TextField()
     new_product = models.TextField()
     language_code = models.CharField(
-        max_length=36, null=False, blank=False, default="en"
+        max_length=36, null=False, blank=False, default="en-US"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
