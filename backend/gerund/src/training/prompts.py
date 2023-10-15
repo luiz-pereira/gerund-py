@@ -150,6 +150,7 @@ def build_initial_pitches_prompt(script, number_of_pitches=20):
         - The pitches must be a representation of how people chat in real life over a phone call.
         - The pitches must include a greeting.
         - The pitches must include a very brief introduction of the company.
+        - Select an easy to remember name for the the representative.
         - The pitches must be brief and direct, but also polite and charming.
         - The pitches should be short enough to be said in less than 10 seconds.
         - Present the pitches in a unordered/unnumbered list using --- as a separator.

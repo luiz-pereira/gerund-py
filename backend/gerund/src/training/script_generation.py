@@ -241,6 +241,7 @@ def _do_generate_answers(prompt, questions):
 
 def generate_initial_pitches(script):
     """Generate initial pitches for customer call."""
+    OutgoingMessage.objects.filter(script=script, type="initial_pitch").delete()
     prompt = prompts.build_initial_pitches_prompt(script)
     response = ai_apis.get_chat_completion(prompt, model=Models.GPT4)
     pitches = response.split("--- ")[1:]
@@ -357,5 +358,7 @@ def fill_speeches(script):
     )
     # then loop through them and fill them with google binaries
     for outgoing in filtered_outgoing:
-        outgoing.speech_binary = ai_apis.produce_speech_binary(outgoing.content)
+        outgoing.speech_binary = ai_apis.produce_speech_binary(
+            text=outgoing.content, language=script.language_code, speaking_rate=1.3
+        )
         outgoing.save()

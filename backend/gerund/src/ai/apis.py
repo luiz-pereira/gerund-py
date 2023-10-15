@@ -11,6 +11,11 @@ class Models:
     GPT4 = "gpt-4-0613"
 
 
+class Genders:
+    MALE = texttospeech.SsmlVoiceGender.MALE
+    FEMALE = texttospeech.SsmlVoiceGender.FEMALE
+
+
 def produce_embedding(text):
     """Produce an embedding for the text."""
     model = "text-embedding-ada-002"
@@ -20,22 +25,28 @@ def produce_embedding(text):
 
 
 DEFAULT_LANGUAGE = "pt-BR"
-DEFAULT_VOICE = "pt-BR-Standard-C"
+DEFAULT_VOICE = "Neural2-A"
 DEFAULT_GENDER = texttospeech.SsmlVoiceGender.FEMALE
 ENCODING = texttospeech.AudioEncoding.MP3
 
 
 def produce_speech_binary(
-    text, language=DEFAULT_LANGUAGE, voice=DEFAULT_VOICE, gender=DEFAULT_GENDER
+    text,
+    language=DEFAULT_LANGUAGE,
+    voice=DEFAULT_VOICE,
+    gender=Genders.MALE,
+    speaking_rate=1.0,
 ):
     client = texttospeech.TextToSpeechClient()
     voice_config = texttospeech.VoiceSelectionParams(
         language_code=language,
-        name=voice,
+        name=language + "-" + voice,
         ssml_gender=gender,
     )
 
-    audio_config = texttospeech.AudioConfig(audio_encoding=ENCODING)
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=ENCODING, speaking_rate=speaking_rate
+    )
     synthesis_input = texttospeech.SynthesisInput(text=text)
     response = client.synthesize_speech(
         input=synthesis_input, voice=voice_config, audio_config=audio_config
