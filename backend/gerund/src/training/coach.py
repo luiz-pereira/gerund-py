@@ -1,21 +1,24 @@
 from threading import Thread
 
-from gerund.models import IncomingEmbeddings, OutgoingMessages
+from gerund.models import IncomingEmbedding, OutgoingMessage
 from gerund.src.ai import apis as ai_apis
 
 from pgvector.django import L2Distance
 
-DEFAULT_MIN_DISTANCE = 0.5
+DEFAULT_MIN_DISTANCE = 0.7
 
 TRIGGER_MAP = {
     "fail_trigger": "fail_ending",
     "success_trigger": "success_ending",
-    "partial_fail_trigger": "intermediate_pitch"
+    "partial_fail_trigger": "intermediate_pitch",
 }
+
 
 class Coach:
     """The coach class that handles the training of the AI."""
-    def __init__(self):
+
+    def __init__(self, script):
+        self.script = script
         self.in_smart_answer_loop = False
         self.smart_answer = None
 
@@ -36,8 +39,11 @@ class Coach:
     def _find_nearest_neighbor(self, message, min_distance=DEFAULT_MIN_DISTANCE):
         """Find the nearest embedding. Returns None if the distance is too big to the nearest neighbor."""
         message_embedding = ai_apis.produce_embedding(message)
-        nearest_neighbor = IncomingEmbeddings.objects.annotate(
-            distance=L2Distance('embedding', message_embedding)).order_by('distance')[0]
+        nearest_neighbor = IncomingEmbedding.objects.annotate(
+            distance=L2Distance("embedding", message_embedding)
+        ).order_by("distance")[0]
+
+        print(nearest_neighbor.distance)
 
         if nearest_neighbor.distance < min_distance:
             return nearest_neighbor
@@ -56,13 +62,15 @@ class Coach:
         """Gets an answer for a question."""
         original_answer = nearest_message.question.answer_set.first()
         # Randomly select an outgoing message
-        outgoing = OutgoingMessages.objects.filter(answer=original_answer).order_by('?').first()
+        outgoing = (
+            OutgoingMessage.objects.filter(answer=original_answer).order_by("?").first()
+        )
         return outgoing
 
     def _react_on_trigger(self, nearest_message):
         """Gets an answer for a question."""
         reaction = TRIGGER_MAP[nearest_message.type]
-        outgoing = OutgoingMessages.objects.filter(type=reaction).order_by('?').first()
+        outgoing = OutgoingMessage.objects.filter(type=reaction).order_by("?").first()
         return outgoing
 
     def start_smart_answer_loop(self, context):
@@ -79,21 +87,30 @@ class Coach:
 
     def stall_message(self):
         """Stall message."""
-        return OutgoingMessages.objects.filter(type="stalling").order_by('?').first()
+        return OutgoingMessage.objects.filter(type="stalling").order_by("?").first()
 
     def hmmm(self):
         """Hmmm message."""
-        return OutgoingMessages.objects.filter(type="hmmm").order_by('?').first()
+        return OutgoingMessage.objects.filter(type="hmmm").order_by("?").first()
 
     def greeting(self):
         """Greet message."""
-        return OutgoingMessages.objects.filter(type="greeting").order_by('?').first()
+        return (
+            OutgoingMessage.objects.filter(type="greeting", script=self.script)
+            .order_by("?")
+            .first()
+        )
 
     def initial_pitch(self):
         """Initial pitch message."""
-        return OutgoingMessages.objects.filter(type="initial_pitch").order_by('?').first()
+        return (
+            OutgoingMessage.objects.filter(type="initial_pitch", script=self.script)
+            .order_by("?")
+            .first()
+        )
 
-class SmartAnswer():
+
+class SmartAnswer:
     def __init__(self, content, speech_binary):
         self.content = content
         self.speech_binary = speech_binary
