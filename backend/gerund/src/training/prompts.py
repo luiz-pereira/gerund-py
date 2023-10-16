@@ -1,5 +1,32 @@
 """This module contains the functions that build the prompts for the script generation."""
 
+def build_initial_conversation_prompt(script):
+    """Builds the initial prompt for the chatbot."""
+    if script.custom_prompt == "" or script.custom_prompt is None:
+        custom_prompt = ""
+    else:
+        custom_prompt = f"\nOther details:\n{script.custom_prompt}\n"
+
+    prompt = f"""
+        You are an expert sales representative and are performing your job at your best.
+        You've been given a new product to sell and you need to follow the script to try to get the customer to buy the new product.
+        Please follow the instructions below when speaking to the customer.
+        - Be brief and direct, but also polite and charming.
+        - Your answers will be put through a text-to-speech engine, so try to use words that are easy to pronounce.
+        - Try to answer within the context of the company and the product. If you don't know the answer, say so.
+        - Each question must be unique, in terms of meaning.
+        - The chat will be automatically answered most of the time, so make sure you take a good look at the previous chat answers.
+        - Use the languange that is used after "Company Presentation:"
+
+        Context:
+        Company Presentation:
+        {script.presentation}
+
+        New Product:
+        {script.new_product}
+        {custom_prompt}
+        """
+    return [{"role": "system", "content": prompt}]
 
 def build_questions_prompt(script, number_of_questions):
     """Builds the prompt for the chatbot."""
@@ -112,9 +139,6 @@ def build_question_variations_prompt(question, number_of_variations):
     return [{"role": "system", "content": prompt}]
 
 
-""
-
-
 def build_answer_variations_prompt(answer, number_of_variations):
     """Builds the prompt for generating variations to an answer so that we can store in vector DB."""
     prompt = f"""
@@ -135,9 +159,6 @@ def build_answer_variations_prompt(answer, number_of_variations):
     return [{"role": "system", "content": prompt}]
 
 
-""
-
-
 def build_initial_pitches_prompt(script, number_of_pitches=20):
     """Builds the prompt for generating initial pitches for a customer call."""
     prompt = f"""
@@ -150,7 +171,7 @@ def build_initial_pitches_prompt(script, number_of_pitches=20):
         - The pitches must be a representation of how people chat in real life over a phone call.
         - The pitches must include a greeting.
         - The pitches must include a very brief introduction of the company.
-        - Select an easy to remember name for the the representative.
+        - Select an easy to remember name for the the represen
         - The pitches must be brief and direct, but also polite and charming.
         - The pitches should be short enough to be said in less than 10 seconds.
         - Present the pitches in a unordered/unnumbered list using --- as a separator.

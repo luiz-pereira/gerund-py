@@ -5,14 +5,16 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 from gerund.src.training.coach import Coach
+from gerund.src.training.prompts import build_initial_conversation_prompt
+
 
 class Robot:
     """Robot class."""
 
-    def __init__(self, initial_prompt = ""):
+    def __init__(self, script):
         """Initialize the robot with an API key."""
-        self.chat_log = [self._build_chat_entry("system", initial_prompt)]
-        self.coach = Coach()
+        self.chat_log = [build_initial_conversation_prompt(script=script)]
+        self.coach = Coach(script=script)
         self.closed = True
 
     def __enter__(self):
@@ -26,10 +28,7 @@ class Robot:
 
     def _build_chat_entry(self, role, content):
         """Build a chat entry."""
-        return {
-            "role": role,
-            "content": content
-        }
+        return {"role": role, "content": content}
 
     def greet(self):
         """Greet the user."""
@@ -69,7 +68,6 @@ class Robot:
         while coach.in_smart_answer_loop:
             time.sleep(2)
             # plays a hmmm message
-            self.speak(coach.hmmm().speech_binary)
 
         return coach.smart_answer
 
@@ -77,4 +75,3 @@ class Robot:
         """Speak the text."""
         audio_segment = AudioSegment.from_file(io.BytesIO(speech_binary), format="mp3")
         play(audio_segment)
-
