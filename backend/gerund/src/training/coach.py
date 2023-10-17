@@ -5,10 +5,10 @@ from gerund.src.ai import apis as ai_apis
 
 from pgvector.django import L2Distance
 
-DEFAULT_MIN_DISTANCE = 0.7
+DEFAULT_MIN_DISTANCE = 0.65
 
 TRIGGER_MAP = {
-    "fail_trigger": "fail_ending",
+    "total_fail_trigger": "fail_ending",
     "success_trigger": "success_ending",
     "partial_fail_trigger": "intermediate_pitch",
 }
@@ -43,8 +43,6 @@ class Coach:
             distance=L2Distance("embedding", message_embedding)
         ).order_by("distance")[0]
 
-        print(nearest_neighbor.distance)
-
         if nearest_neighbor.distance < min_distance:
             return nearest_neighbor
 
@@ -60,7 +58,7 @@ class Coach:
 
     def _get_answer_for_question(self, nearest_message):
         """Gets an answer for a question."""
-        original_answer = nearest_message.question.answer_set.first()
+        original_answer = nearest_message.question.answer
         # Randomly select an outgoing message
         outgoing = (
             OutgoingMessage.objects.filter(answer=original_answer).order_by("?").first()
@@ -80,8 +78,10 @@ class Coach:
 
     def _get_smart_answer(self, context):
         """Gets a smart answer for a message."""
-        text_answer = ai_apis.get_chat_completion(context)
-        speech_answer = ai_apis.produce_speech_binary(text_answer)
+        text_answer = ai_apis.get_chat_completion(context, model=ai_apis.Models.GPT3)
+        speech_answer = ai_apis.produce_speech_binary(
+            text_answer, self.script.language_code
+        )
         self.smart_answer = SmartAnswer(text_answer, speech_answer)
         self.in_smart_answer_loop = False
 

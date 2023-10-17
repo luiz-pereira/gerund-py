@@ -94,6 +94,8 @@ class HumanTranscription:
 
                     transcript = result.alternatives[0].transcript
 
+                    print("\033[0;33m", "Human: " + transcript)
+
                     current_time = get_current_time()
 
                     yield transcript, current_time

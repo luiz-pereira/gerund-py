@@ -7,6 +7,8 @@ from gerund.src.ai import apis as ai_apis
 from gerund.src.ai.apis import Models
 from gerund.src.training import prompts
 
+from gerund.src.conversation.moderator import Moderator
+
 
 def generate_potential_questions(script, number_of_questions=100):
     """Generate potential questions."""
@@ -362,3 +364,11 @@ def fill_speeches(script):
             text=outgoing.content, language=script.language_code, speaking_rate=1.3
         )
         outgoing.save()
+
+
+def start_moderation(script):
+    """Start the moderation process for a script."""
+    with Moderator(script) as moderator:
+        moderator.start()
+        while not moderator.closed:
+            pass
