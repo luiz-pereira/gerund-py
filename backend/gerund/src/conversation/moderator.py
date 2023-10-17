@@ -2,9 +2,7 @@ from gerund.src.conversation.human.human_transcription import HumanTranscription
 from gerund.src.conversation.robot.robot import Robot
 import time
 
-RED = "\033[0;31m"
-GREEN = "\033[0;32m"
-YELLOW = "\033[0;33m"
+OKCYAN = "\033[96m"
 
 
 class Moderator:
@@ -31,17 +29,18 @@ class Moderator:
         """
         Starts the chat between the user and the bot.
         """
-        print(YELLOW, '\nListening, say "Quit" or "Exit" to stop.\n\n')
-        print(YELLOW, "=====================================================\n")
+        print(OKCYAN, "\nConversation between Robot and Human.\n\n")
+        print(OKCYAN, "=====================================================\n")
 
         with self.human as human, self.bot as bot:
             bot.initial_pitch()
-            human_generator = human.transcription_generator()
+            human_generator = human.transcription_generator(
+                language_code=self.script.language_code
+            )
             bot_generator = bot.robot_generator(human_generator)
             while not human.closed and not bot.closed:
                 for question, answer in bot_generator:
-                    print(YELLOW, f"Q: {question}")
-                    print(GREEN, f"A: {answer}")
+                    print(OKCYAN, "Waiting for next question")
                     print("")
 
 

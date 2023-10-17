@@ -5,7 +5,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 from gerund.src.training.coach import Coach
-from gerund.src.training.prompts import build_initial_conversation_prompt
+from gerund.src.training import prompts
 
 
 class Robot:
@@ -13,7 +13,7 @@ class Robot:
 
     def __init__(self, script):
         """Initialize the robot with an API key."""
-        self.chat_log = [build_initial_conversation_prompt(script=script)]
+        self.chat_log = prompts.build_initial_conversation_prompt(script=script)
         self.coach = Coach(script=script)
         self.closed = True
 
@@ -39,6 +39,7 @@ class Robot:
     def initial_pitch(self):
         """Play the initial pitch."""
         initial_pitch = self.coach.initial_pitch()
+        self.print_spoken("Robot: " + initial_pitch.content)
         self.chat_log.append(self._build_chat_entry("assistant", initial_pitch.content))
         self.speak(initial_pitch.speech_binary)
 
@@ -54,6 +55,9 @@ class Robot:
         coach = self.coach
         answer = coach.dumb_interpret(message) or self._smart_answer()
         self.chat_log.append(self._build_chat_entry("assistant", answer.content))
+
+        self.print_spoken("Robot: " + answer.content)
+
         self.speak(answer.speech_binary)
         return message, answer.content
 
@@ -63,10 +67,10 @@ class Robot:
         context = self.chat_log
         coach.start_smart_answer_loop(context)
         # plays a stalling message
-        self.speak(coach.stall_message().speech_binary)
 
         while coach.in_smart_answer_loop:
-            time.sleep(2)
+            self.speak(coach.stall_message().speech_binary)
+            time.sleep(3)
             # plays a hmmm message
 
         return coach.smart_answer
@@ -75,3 +79,8 @@ class Robot:
         """Speak the text."""
         audio_segment = AudioSegment.from_file(io.BytesIO(speech_binary), format="mp3")
         play(audio_segment)
+
+    def print_spoken(self, text):
+        """Print the spoken text."""
+        green = "\033[0;32m"
+        print(green, text)

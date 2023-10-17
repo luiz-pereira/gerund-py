@@ -96,6 +96,12 @@ export default function Script () {
     setLoading(false)
   }
 
+  const handleStartModeration = async () => {
+    setLoading(true)
+    await get(`scripts/${id}/start_moderation`)
+    setLoading(false)
+  }
+
   return (
     <Container maxWidth="100%">
       <Grid2 container direction="row">
@@ -406,6 +412,9 @@ export default function Script () {
           </Grid2>
         </Grid2>
       </Grid2>
+      <Button variant="contained" color="primary" style={{ margin: 10 }} onClick={handleStartModeration}>
+        Start Moderation
+      </Button>
       <ListQuestions
         questions={questions}
         handleAnswerClick={setSelectedAnswerId}

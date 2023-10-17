@@ -268,3 +268,14 @@ class ScriptView(viewsets.ModelViewSet):
         except Exception as error:
             print(error)
             return Response(status=HTTP_400_BAD_REQUEST)
+
+    # TODO: remove this. Just for testing purposes
+    @action(detail=True, methods=["get"])
+    def start_moderation(self, request, pk=None):
+        script = self.get_object()
+        try:
+            script_generation.start_moderation(script)
+            return Response(status=HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=HTTP_400_BAD_REQUEST)
